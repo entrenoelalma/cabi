@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Plan Semanal Cabify CABA – Zonas + Horarios Pico</title>
+  <style>
+    :root{
+      --bg:#0b0f1a; --card:#11182a; --card2:#0f1424; --ink:#eef2ff; --muted:#b6c3ff;
+      --accent:#6aa6ff; --good:#4ade80; --med:#facc15; --high:#fb923c; --very:#ef4444;
+      --chip:#1f2a44; --shadow: 0 10px 25px rgba(0,0,0,.35);
+    }
+    *{box-sizing:border-box}
+    body{margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,'Helvetica Neue',Arial; color:var(--ink); background: radial-gradient(1200px 600px at 80% -10%, #1a2a50 0%, rgba(10,14,24,0) 60%) , var(--bg);}
+    a{color:var(--accent)}
+    .wrap{max-width:1100px; margin:auto; padding:28px}
+    header.hero{position:relative; border-radius:28px; background:
+      radial-gradient(800px 300px at 80% 0%, rgba(106,166,255,.25), transparent 60%),
+      linear-gradient(135deg, #0f1a33 0%, #0c1226 80%);
+      padding:36px 28px 26px; box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+    header.hero h1{margin:0 0 8px; font-size:clamp(26px, 2.8vw, 44px); letter-spacing:.3px}
+    header.hero p{margin:6px 0 14px; color:var(--muted)}
+    .cta{display:flex; gap:10px; flex-wrap:wrap}
+    .btn{background:#1c2744; color:#fff; padding:10px 14px; border-radius:14px; border:1px solid #263154; text-decoration:none; transition:.2s transform ease, .2s background ease}
+    .btn:hover{transform:translateY(-1px); background:#23315a}
+
+    .grid{display:grid; gap:18px}
+    .grid.columns-3{grid-template-columns:repeat(3,1fr)}
+    @media (max-width:950px){.grid.columns-3{grid-template-columns:1fr}}
+
+    .card{background:linear-gradient(180deg, var(--card) 0%, var(--card2) 100%); border:1px solid #1b2542; border-radius:22px; padding:20px; box-shadow:var(--shadow)}
+    .card h2,.card h3{margin-top:0}
+
+    /* Etiquetas / chips */
+    .chips{display:flex; gap:8px; flex-wrap:wrap}
+    .chip{background:var(--chip); color:var(--muted); border:1px solid #273455; padding:6px 10px; border-radius:999px; font-size:12px}
+
+    /* Leyenda colores */
+    .legend{display:flex; gap:12px; align-items:center; flex-wrap:wrap}
+    .dot{width:12px; height:12px; border-radius:3px; display:inline-block; margin-right:6px}
+    .c-low{background:var(--good)}
+    .c-med{background:var(--med)}
+    .c-high{background:var(--high)}
+    .c-very{background:var(--very)}
+
+    /* Heatmap */
+    .heat{overflow:auto}
+    table.heatmap{width:100%; border-collapse:separate; border-spacing:0; min-width:820px}
+    .heatmap th,.heatmap td{padding:10px 12px; text-align:center; border-right:1px solid #223059; border-bottom:1px solid #223059}
+    .heatmap thead th{position:sticky; top:0; background:#121a2f; z-index:2}
+    .heatmap th:first-child{position:sticky; left:0; z-index:3; background:#121a2f; text-align:left}
+    .heatmap tr:nth-child(odd) td:first-child{background:#131b33}
+    .heatmap tr:nth-child(even) td:first-child{background:#0f162b}
+    .heatmap .t{border-top-left-radius:16px}
+    .heatmap .b{border-bottom-left-radius:16px}
+    .pill{padding:.2rem .5rem; border-radius:999px; font-weight:600}
+    .p-low{background:rgba(74,222,128,.2); color:#c3f0cf}
+    .p-med{background:rgba(250,204,21,.2); color:#f5e7b0}
+    .p-high{background:rgba(251,146,60,.23); color:#ffd1b6}
+    .p-very{background:rgba(239,68,68,.25); color:#ffb6b6}
+
+    /* Tabla picos */
+    table.peaks{width:100%; border-collapse:separate; border-spacing:0}
+    .peaks th,.peaks td{padding:12px; border-bottom:1px solid #223059}
+    .peaks th{text-align:left; background:#121a2f}
+
+    details{border:1px solid #203055; border-radius:18px; padding:14px 16px; background:#0f1529}
+    details+details{margin-top:12px}
+    summary{cursor:pointer}
+    footer{opacity:.75; margin:30px 0 10px}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="hero">
+      <h1>Plan semanal Cabify – CABA 🚖</h1>
+      <p>Micrositio con <strong>zonas y horarios pico</strong> para maximizar tu rentabilidad. Incluye un <em>heatmap</em> por día/horario y una tabla de picos con <strong>zonas de máxima potencialidad</strong>.</p>
+      <div class="cta">
+        <a href="#heatmap" class="btn">Ver Heatmap</a>
+        <a href="#picos" class="btn">Zonas Pico por Día</a>
+        <a href="#tips" class="btn">Consejos Tácticos</a>
+      </div>
+    </header>
+
+    <!-- LEYENDA -->
+    <section class="card" style="margin-top:18px">
+      <h2>Escala de rentabilidad ($/h)</h2>
+      <div class="legend">
+        <span><i class="dot c-low"></i> 🟢 Baja (≤ $12/h)</span>
+        <span><i class="dot c-med"></i> 🟡 Media ($12–18/h)</span>
+        <span><i class="dot c-high"></i> 🟠 Alta ($18–25/h)</span>
+        <span><i class="dot c-very"></i> 🔴 Muy alta (+$25/h)</span>
+      </div>
+    </section>
+
+    <!-- HEATMAP -->
+    <section id="heatmap" class="card heat">
+      <h2>Heatmap – Rentabilidad estimada por día y franja</h2>
+      <p class="muted">Valores orientativos para CABA en 7 franjas: Madrugada (0–6), Mañana (6–10), Media Mañana (10–12), Mediodía (12–14), Tarde (14–17), Tarde Pico (17–20), Noche (20–0).</p>
+      <table class="heatmap">
+        <thead>
+          <tr>
+            <th class="t">Día</th>
+            <th>Madrugada<br><small>(0–6)</small></th>
+            <th>Mañana<br><small>(6–10)</small></th>
+            <th>Media Mañana<br><small>(10–12)</small></th>
+            <th>Mediodía<br><small>(12–14)</small></th>
+            <th>Tarde<br><small>(14–17)</small></th>
+            <th>Tarde Pico<br><small>(17–20)</small></th>
+            <th>Noche<br><small>(20–0)</small></th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Los mismos valores que acordamos en la conversación -->
+          <tr>
+            <td class="pill p-med">Lunes</td>
+            <td class="p-low">8</td><td class="p-high">18</td><td class="p-med">14</td><td class="p-med">15</td><td class="p-med">14</td><td class="p-high">20</td><td class="p-med">15</td>
+          </tr>
+          <tr>
+            <td class="pill p-med">Martes</td>
+            <td class="p-low">8</td><td class="p-high">18</td><td class="p-med">14</td><td class="p-med">15</td><td class="p-med">14</td><td class="p-high">20</td><td class="p-med">15</td>
+          </tr>
+          <tr>
+            <td class="pill p-med">Miércoles</td>
+            <td class="p-low">9</td><td class="p-high">18</td><td class="p-med">15</td><td class="p-med">15</td><td class="p-med">15</td><td class="p-high">22</td><td class="p-med">16</td>
+          </tr>
+          <tr>
+            <td class="pill p-high">Jueves</td>
+            <td class="p-med">12</td><td class="p-high">19</td><td class="p-med">15</td><td class="p-med">16</td><td class="p-med">16</td><td class="p-very">25</td><td class="p-high">22</td>
+          </tr>
+          <tr>
+            <td class="pill p-high">Viernes</td>
+            <td class="p-med">14</td><td class="p-high">20</td><td class="p-med">16</td><td class="p-med">17</td><td class="p-med">16</td><td class="p-very">28</td><td class="p-very">30</td>
+          </tr>
+          <tr>
+            <td class="pill p-very">Sábado</td>
+            <td class="p-very">26</td><td class="p-med">14</td><td class="p-med">15</td><td class="p-med">15</td><td class="p-med">15</td><td class="p-very">26</td><td class="p-very">35</td>
+          </tr>
+          <tr>
+            <td class="pill p-high">Domingo</td>
+            <td class="p-high">20</td><td class="p-low">10</td><td class="p-low">12</td><td class="p-med">12</td><td class="p-med">14</td><td class="p-high">20</td><td class="p-high">22</td>
+          </tr>
+        </tbody>
+      </table>
+      <p style="margin-top:10px; color:var(--muted)">Cuanto más rojiza la celda, mayor la rentabilidad estimada.</p>
+    </section>
+
+    <!-- Picos por día con zonas de máxima potencialidad -->
+    <section id="picos" class="card">
+      <h2>Zonas de máxima potencialidad por día y franja pico</h2>
+      <table class="peaks">
+        <thead>
+          <tr>
+            <th>Día</th>
+            <th>Horario Pico</th>
+            <th>$ / h Est.</th>
+            <th>Zonas recomendadas</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Lunes</td><td>6–10 h</td><td class="pill p-high">18</td><td>Microcentro, Retiro, Puerto Madero, Aeroparque</td></tr>
+          <tr><td>Martes</td><td>6–10 h</td><td class="pill p-high">18</td><td>Microcentro + Belgrano/Núñez → AEP</td></tr>
+          <tr><td>Miércoles</td><td>17–20 h</td><td class="pill p-high">22</td><td>Microcentro, Tribunales, Once → barrios</td></tr>
+          <tr><td>Jueves</td><td>17–20 h</td><td class="pill p-very">25</td><td>Palermo, Belgrano, Núñez (after office) + AEP</td></tr>
+          <tr><td>Viernes</td><td>20–0 h</td><td class="pill p-very">30</td><td>Palermo Soho/Hollywood, Costanera Norte, San Telmo</td></tr>
+          <tr><td>Sábado</td><td>20–0 h</td><td class="pill p-very">35</td><td>Palermo, Puerto Madero, Recoleta, boliches Costanera</td></tr>
+          <tr><td>Domingo</td><td>0–6 h</td><td class="pill p-high">20</td><td>Costanera, Palermo, regreso desde Zona Norte</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Consejos tácticos -->
+    <section id="tips" class="grid columns-3">
+      <div class="card">
+        <h3>1) Mañanas laborales</h3>
+        <p>De <strong>6–10 h</strong> (Lun–Vie) es tu bloque más rentable. Ubicate en <em>hubs</em> como Microcentro/Retiro y cercanías de <strong>Aeroparque (AEP)</strong> para capturar traslados corporativos.</p>
+        <div class="chips">
+          <span class="chip">Oficinas</span>
+          <span class="chip">Hoteles</span>
+          <span class="chip">AEP</span>
+        </div>
+      </div>
+      <div class="card">
+        <h3>2) Tarde pico</h3>
+        <p>Entre <strong>17–20 h</strong> enfocate en egresos del centro hacia barrios. Evitá atascos innecesarios moviéndote por bordes (9 de Julio, Libertador, Córdoba, Pueyrredón).</p>
+        <div class="chips">
+          <span class="chip">Egreso oficinas</span>
+          <span class="chip">Viajes largos</span>
+          <span class="chip">Rutas rápidas</span>
+        </div>
+      </div>
+      <div class="card">
+        <h3>3) Noche de ocio</h3>
+        <p><strong>Vie/Sáb 20–03 h</strong> = oro. Rotá entre Palermo, Recoleta, Costanera y Puerto Madero. Prioriza zonas de boliches y polos gastronómicos.</p>
+        <div class="chips">
+          <span class="chip">Bares</span>
+          <span class="chip">Boliches</span>
+          <span class="chip">Restaurantes</span>
+        </div>
+      </div>
+      <div class="card">
+        <h3>4) Gestión de horas valle</h3>
+        <p>De <strong>14–17 h</strong> baja la demanda. Descansá, cargá combustible y comé. Si seguís online, mantenete en Palermo/Caballito para trayectos cortos.</p>
+      </div>
+      <div class="card">
+        <h3>5) Selección de viajes</h3>
+        <p>Ser selectivo puede mejorar tarifa efectiva, pero cuidá el <em>tiempo en vacío</em>. Buscar equilibrio entre precio, distancia y proximidad.</p>
+      </div>
+      <div class="card">
+        <h3>6) Checklist rápido</h3>
+        <ul>
+          <li>Auto limpio, agua fría y cargadores.</li>
+          <li>Rutas alternativas listas (Waze/Maps).</li>
+          <li>Evitar zonas de cortes/partidos (consulta del día).</li>
+        </ul>
+      </div>
+    </section>
+
+    <details style="margin-top:18px">
+      <summary>Ver notas metodológicas</summary>
+      <p>Estos valores son <strong>estimaciones</strong> basadas en patrones típicos de movilidad en CABA y el esquema trabajado en esta conversación. Las cifras $/h expresan potencial relativo por franja y día; pueden variar según clima, eventos, feriados, cortes y condiciones del mercado.</p>
+    </details>
+
+    <footer>
+      Hecho con ❤ para maximizar tu jornada Cabify en CABA. ¿Querés esta info en PDF o en versión calendario (.ics) para tu celular? Pedilo y lo generamos al instante.
+    </footer>
+  </div>
+</body>
+</html>

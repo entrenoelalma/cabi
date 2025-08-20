@@ -1,0 +1,245 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🚗 ¡Tu Guía para la Rentabilidad como Conductor de Apps! 🗺️</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #ff6f61, #ffd166);
+            color: #333;
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+            animation: fadeIn 1s ease-in;
+        }
+        header {
+            background: #ff3d00;
+            color: white;
+            text-align: center;
+            padding: 2rem;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        header h1 {
+            font-size: 2.5rem;
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+        .section {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+        .section:hover {
+            transform: translateY(-10px);
+        }
+        h2 {
+            color: #ff3d00;
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+        p, li {
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+        }
+        .highlight {
+            background: #ffd166;
+            padding: 0.5rem 1rem;
+            border-radius: 10px;
+            display: inline-block;
+            margin: 0.5rem 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+            background: #f9f9f9;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        th, td {
+            padding: 1rem;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background: #ff3d00;
+            color: white;
+        }
+        .emoji {
+            font-size: 1.5rem;
+            margin-right: 0.5rem;
+        }
+        .button {
+            display: inline-block;
+            background: #28a745;
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background 0.3s ease;
+            margin: 1rem 0;
+        }
+        .button:hover {
+            background: #218838;
+        }
+        footer {
+            text-align: center;
+            padding: 2rem;
+            background: #333;
+            color: white;
+            margin-top: 2rem;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @media (max-width: 768px) {
+            header h1 { font-size: 1.8rem; }
+            h2 { font-size: 1.5rem; }
+            .section { padding: 1rem; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>🚗 ¡El GPS de tu Negocio! 🗺️<br>Tu Guía para la Rentabilidad como Conductor de Apps 💸</h1>
+    </header>
+
+    <div class="container">
+        <div class="section">
+            <h2>🤫 De la Promesa a la Ganancia Real</h2>
+            <p>¿Sueñas con ganar hasta <span class="highlight">$500,000 por semana</span> conduciendo para apps como Cabify? 😍 ¡Es posible, pero hay que ser estratégico! 💡 Este micrositio te revela los secretos para maximizar tus ganancias y evitar los costos ocultos que se comen tus ingresos. 🚨 ¡Conviértete en un conductor PRO! 🧠</p>
+        </div>
+
+        <div class="section">
+            <h2>🤔 ¿Cuánto Ganas Realmente?</h2>
+            <p>Las apps prometen ingresos altos, como <span class="highlight">$500,000/semana</span> o bonos de <span class="highlight">$80,000</span> en tu primera semana. Pero, ¿cuánto te queda en el bolsillo? 🤑 Aquí te contamos la verdad:</p>
+            <ul>
+                <li><span class="emoji">⛽️</span><strong>Combustible:</strong> La nafta premium cuesta <span class="highlight">$1.454/litro</span>. ¡Pasarte a GNC puede reducir tus costos a la mitad! 🚗💨</li>
+                <li><span class="emoji">💸</span><strong>Comisión de la App:</strong> Cabify se lleva entre <span class="highlight">22-24%</span> por viaje, ¡y a veces hasta 35%! 😱</li>
+                <li><span class="emoji">🛡️</span><strong>Seguro Comercial:</strong> Necesitas un seguro especial que puede costar <span class="highlight">$56,900/trimestre</span>. 🚘</li>
+                <li><span class="emoji">🔧</span><strong>Mantenimiento:</strong> Conducir 100,000 km al año desgasta tu auto. ¡Prepárate para gastos en neumáticos, frenos y más! 🛠️</li>
+            </ul>
+            <p class="highlight">💡 La ganancia neta es lo que importa. ¡Sigue leyendo para aprender a maximizarla! 💪</p>
+        </div>
+
+        <div class="section">
+            <h2>🗺️💰 El Mapa del Tesoro: ¿Dónde y Cuándo Ganar Más?</h2>
+            <p>No se trata de trabajar más, sino de trabajar <strong>mejor</strong>. Aquí tienes las claves para capturar los viajes más rentables:</p>
+            <ul>
+                <li><span class="emoji">🌅</span><strong>Lunes a Viernes:</strong> Las horas pico (06:00-09:00 y 17:00-19:00) son oro puro. El tráfico lento = más ganancias por tiempo. 🚦</li>
+                <li><span class="emoji">🎉</span><strong>Viernes por la Noche:</strong> De 13:00 a 24:00, la demanda explota. ¡No te lo pierdas! 💥</li>
+                <li><span class="emoji">🌙</span><strong>Fines de Semana:</strong> Todo el día y la noche son ideales, especialmente en zonas de ocio. 🍻</li>
+                <li><span class="emoji">☔️</span><strong>Clima:</strong> ¡La lluvia es tu amiga! La tarifa dinámica dispara tus ingresos. 🚀</li>
+            </ul>
+            <h3>📅 Tu Calendario Estratégico</h3>
+            <table>
+                <tr>
+                    <th>Día</th>
+                    <th>Mañana (7-10)</th>
+                    <th>Mediodía (12-14)</th>
+                    <th>Tarde (17-20)</th>
+                    <th>Noche (20-0)</th>
+                </tr>
+                <tr>
+                    <td>Lunes a Jueves</td>
+                    <td>✅</td>
+                    <td>🟡</td>
+                    <td>📈</td>
+                    <td>✅</td>
+                </tr>
+                <tr>
+                    <td>Viernes</td>
+                    <td>📈</td>
+                    <td>✅</td>
+                    <td>💥</td>
+                    <td>💥</td>
+                </tr>
+                <tr>
+                    <td>Sábado</td>
+                    <td>📈</td>
+                    <td>✅</td>
+                    <td>💥</td>
+                    <td>💥</td>
+                </tr>
+                <tr>
+                    <td>Domingo</td>
+                    <td>✅</td>
+                    <td>✅</td>
+                    <td>📈</td>
+                    <td>✅</td>
+                </tr>
+            </table>
+            <p><strong>✅ Oportunidad Normal | 📈 Oportunidad Creciente | 💥 Máxima Oportunidad</strong></p>
+        </div>
+
+        <div class="section">
+            <h2>🧠💡 Gestión Inteligente: Tu Hoja de Ruta al Éxito</h2>
+            <p>¡Ser un conductor PRO es como manejar un negocio! Sigue estos pasos para triunfar:</p>
+            <ol>
+                <li><span class="emoji">📱</span><strong>Conoce la Plataforma:</strong> Usa los mapas de calor de Cabify para encontrar zonas con alta demanda en tiempo real. ¡No pierdas tiempo parado! 🚀</li>
+                <li><span class="emoji">🔄</span><strong>Mecha entre Apps:</strong> Combina Cabify, Uber y DiDi para minimizar tiempos muertos y elegir los mejores viajes. 🤑</li>
+                <li><span class="emoji">📊</span><strong>Monitorea tus Costos:</strong> Lleva un registro detallado de gastos (combustible, mantenimiento, seguros) para saber cuánto ganas de verdad. 💸</li>
+            </ol>
+            <p class="highlight">💪 ¡Con estrategia y disciplina, tus ganancias subirán como cohete! 🚀</p>
+            <a href="#" class="button">¡Empieza a Ganar Más Hoy! 🎯</a>
+        </div>
+    </div>
+
+    <footer>
+        <p>🚗 ¡Conduce con inteligencia y maximiza tus ganancias en Buenos Aires! 💰<br>© 2025 Tu Guía de Rentabilidad</p>
+    </footer>
+</body>
+</html>

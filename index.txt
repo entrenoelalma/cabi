@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🚗💨 ¡Maximiza tus ganancias con Cabify en Buenos Aires! 💰📈</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #333;
+        }
+        .jumbotron {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: white;
+            padding: 4rem 2rem;
+            margin-bottom: 2rem;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+        .btn-custom {
+            background: linear-gradient(135deg, #ffc107 0%, #e91e63 100%);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 12px 30px;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .btn-custom:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 7px 20px rgba(0, 0, 0, 0.3);
+        }
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+            margin-bottom: 20px;
+            background: white;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+        .card-header {
+            background: linear-gradient(135deg, #ff9800 0%, #f44336 100%);
+            color: white;
+            border-radius: 15px 15px 0 0 !important;
+            font-weight: bold;
+            padding: 15px;
+        }
+        .card-body {
+            padding: 20px;
+        }
+        .emoji {
+            font-size: 1.5rem;
+        }
+        .section-title {
+            color: #6a11cb;
+            margin-top: 30px;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+        .rentabilidad-alta {
+            background-color: #ff5252;
+            color: white;
+        }
+        .rentabilidad-media {
+            background-color: #ffb74d;
+            color: white;
+        }
+        .rentabilidad-baja {
+            background-color: #81c784;
+            color: white;
+        }
+        .footer {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            margin-top: 30px;
+            border-radius: 15px;
+        }
+        .table-responsive {
+            overflow-x: auto;
+        }
+        .table {
+            margin-bottom: 0;
+        }
+        .table th, .table td {
+            text-align: center;
+            vertical-align: middle;
+        }
+        .table th {
+            background-color: #6a11cb;
+            color: white;
+        }
+        .icon-large {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            color: #ffc107;
+        }
+    </style>
+</head>
+<body>
+    <div class="container py-5">
+        <!-- Encabezado llamativo -->
+        <div class="jumbotron">
+            <div class="icon-large">
+                <i class="fas fa-taxi"></i>
+            </div>
+            <h1 class="display-4">🚖 ¡Bienvenido, conductor de Cabify! 💰</h1>
+            <p class="lead">Descubre cómo maximizar tus ganancias en Buenos Aires con estrategias probadas, horarios pico y zonas de alta demanda. ¡Aprovecha cada viaje al máximo! 📈💨</p>
+            <a href="#estrategias" class="btn btn-custom btn-lg mt-3">
+                <i class="fas fa-rocket"></i> ¡Empezar ahora!
+            </a>
+        </div>
+
+        <!-- Tabla de rentabilidad -->
+        <div class="section-title">
+            <i class="fas fa-table"></i> Tabla de Rentabilidad por Día y Horario ($/h) 📊
+        </div>
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-calendar-alt"></i> Rentabilidad Bruta Estimada (Nissan March)
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover">
+                        <thead>
+                            <tr>
+                                <th>Día de la Semana</th>
+                                <th>Madrugada (0-7) <i class="fas fa-moon"></i></th>
+                                <th>Mañana (7-10) <i class="fas fa-sun"></i></th>
+                                <th>Mediodía (12-14) <i class="fas fa-utensils"></i></th>
+                                <th>Tarde (17-20) <i class="fas fa-city"></i></th>
+                                <th>Noche (20-0) <i class="fas fa-moon"></i></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Lunes</strong></td>
+                                <td class="rentabilidad-baja">$8 🟢</td>
+                                <td class="rentabilidad-media">$15 🟡</td>
+                                <td class="rentabilidad-baja">$10 🟢</td>
+                                <td class="rentabilidad-media">$20 🟠</td>
+                                <td class="rentabilidad-media">$18 🟡</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Martes</strong></td>
+                                <td class="rentabilidad-baja">$8 🟢</td>
+                                <td class="rentabilidad-media">$15 🟡</td>
+                                <td class="rentabilidad-baja">$10 🟢</td>
+                                <td class="rentabilidad-media">$20 🟠</td>
+                                <td class="rentabilidad-media">$18 🟡</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Miércoles</strong></td>
+                                <td class="rentabilidad-baja">$8 🟢</td>
+                                <td class="rentabilidad-media">$15 🟡</td>
+                                <td class="rentabilidad-baja">$10 🟢</td>
+                                <td class="rentabilidad-media">$20 🟠</td>
+                                <td class="rentabilidad-media">$18 🟡</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Jueves</strong></td>
+                                <td class="rentabilidad-baja">$8 🟢</td>
+                                <td class="rentabilidad-media">$15 🟡</td>
+                                <td class="rentabilidad-baja">$10 🟢</td>
+                                <td class="rentabilidad-alta">$25 🔴</td>
+                                <td class="rentabilidad-alta">$25 🔴</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Viernes</strong></td>
+                                <td class="rentabilidad-media">$18 🟠</td>
+                                <td class="rentabilidad-media">$15 🟡</td>
+                                <td class="rentabilidad-media">$18 🟠</td>
+                                <td class="rentabilidad-alta">$25 🔴</td>
+                                <td class="rentabilidad-alta">$25 🔴</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Sábado</strong></td>
+                                <td class="rentabilidad-alta">$30 🔴</td>
+                                <td class="rentabilidad-media">$22 🟠</td>
+                                <td class="rentabilidad-media">$16 🟡</td>
+                                <td class="rentabilidad-alta">$28 🔴</td>
+                                <td class="rentabilidad-alta">$35 🔴</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Domingo</strong></td>
+                                <td class="rentabilidad-alta">$30 🔴</td>
+                                <td class="rentabilidad-baja">$12 🟢</td>
+                                <td class="rentabilidad-media">$16 🟡</td>
+                                <td class="rentabilidad-media">$22 🟠</td>
+                                <td class="rentabilidad-alta">$35 🔴</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="alert alert-info mt-3">
+                    <i class="fas fa-info-circle"></i> <strong>Leyenda:</strong>
+                    <span class="rentabilidad-alta px-2 py-1 rounded">🔴 Alta ($25/h o más)</span>
+                    <span class="rentabilidad-media px-2 py-1 rounded">🟠 Media-Alta ($18-$24/h)</span>
+                    <span class="rentabilidad-baja px-2 py-1 rounded">🟡 Media ($12-$17/h)</span>
+                    <span class="rentabilidad-baja px-2 py-1 rounded">🟢 Baja (menos de $12/h)</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sección de estrategias -->
+        <div id="estrategias" class="section-title">
+            <i class="fas fa-lightbulb"></i> Estrategias para Maximizar tus Ganancias 💡
+        </div>
+        <p class="lead">
+            Aquí tienes enlaces a guías detalladas para cada día y situación. ¡Elige la que mejor se adapte a tu rutina!
+        </p>
+
+        <!-- Tarjetas de enlaces a micrositios -->
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-sun"></i> Domingo Madrugador: Maratón BA
+                    </div>
+                    <div class="card-body text-center">
+                        <i class="fas fa-running fa-3x mb-3" style="color: #ff9800;"></i>
+                        <h5 class="card-title">🏃‍♂️ Estrategia para Domingos de Maratón</h5>
+                        <p class="card-text">Aprovecha los eventos deportivos y la alta demanda en zonas céntricas.</p>
+                        <a href="micrositio_html_estrategia_domingo_madrugador_maraton_ba.html" class="btn btn-custom">
+                            <i class="fas fa-external-link-alt"></i> Ver estrategia
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-cloud-rain"></i> Días de Lluvia
+                    </div>
+                    <div class="card-body text-center">
+                        <i class="fas fa-umbrella fa-3x mb-3" style="color: #4285f4;"></i>
+                        <h5 class="card-title">☔ Plan para Días de Lluvia</h5>
+                        <p class="card-text">Descubre cómo aumentar tus ganancias cuando llueve en Buenos Aires.</p>
+                        <a href="micrositio_plan_cabify_caba_en_dias_de_lluvia.html" class="btn btn-custom">
+                            <i class="fas fa-external-link-alt"></i> Ver estrategia
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-calendar-week"></i> Semana y Martes
+                    </div>
+                    <div class="card-body text-center">
+                        <i class="fas fa-briefcase fa-3x mb-3" style="color: #e91e63;"></i>
+                        <h5 class="card-title">📅 Plan Semanal y Martes</h5>
+                        <p class="card-text">Optimiza tus horarios en días laborales y martes de alta demanda.</p>
+                        <a href="micrositio_plan_cabify_caba_semana_y_martes.html" class="btn btn-custom">
+                            <i class="fas fa-external-link-alt"></i> Ver estrategia
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-clock"></i> Zonas y Horarios Pico
+                    </div>
+                    <div class="card-body text-center">
+                        <i class="fas fa-map-marked-alt fa-3x mb-3" style="color: #8bc34a;"></i>
+                        <h5 class="card-title">🗺️ Zonas y Horarios de Máxima Rentabilidad</h5>
+                        <p class="card-text">Conoce las mejores zonas y horarios para trabajar en CABA.</p>
+                        <a href="micrositio_plan_semanal_cabify_caba_zonas_horarios_pico.html" class="btn btn-custom">
+                            <i class="fas fa-external-link-alt"></i> Ver estrategia
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 mx-auto">
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-chart-line"></i> Rentabilidad en CABA
+                    </div>
+                    <div class="card-body text-center">
+                        <i class="fas fa-dollar-sign fa-3x mb-3" style="color: #ffc107;"></i>
+                        <h5 class="card-title">💰 Guía Completa de Rentabilidad</h5>
+                        <p class="card-text">Todo lo que necesitas saber para maximizar tus ingresos.</p>
+                        <a href="micrositio_rentabilidad_cabify_caba.html" class="btn btn-custom">
+                            <i class="fas fa-external-link-alt"></i> Ver estrategia
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Consejos rápidos -->
+        <div class="section-title">
+            <i class="fas fa-tips"></i> Consejos Rápidos para Conductores 🚀
+        </div>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="alert alert-success">
+                    <i class="fas fa-car fa-2x mb-2"></i>
+                    <h5>Mantenimiento del Vehículo</h5>
+                    <p>Un auto en buen estado atrae mejores calificaciones y más viajes.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="alert alert-warning">
+                    <i class="fas fa-smile fa-2x mb-2"></i>
+                    <h5>Buen Trato al Pasajero</h5>
+                    <p>Sonríe, sé amable y ofrece un servicio de calidad para obtener mejores propinas.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="alert alert-info">
+                    <i class="fas fa-wifi fa-2x mb-2"></i>
+                    <h5>Ofrece Extras</h5>
+                    <p>Agua, cargador de teléfono o música agradable pueden hacer la diferencia.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pie de página -->
+        <div class="footer">
+            <p class="mb-0">
+                <i class="fas fa-heart"></i> Hecho para conductores de Cabify en Buenos Aires.
+                ¡Conduce seguro y maximiza tus ganancias! 🚗💨
+            </p>
+        </div>
+    </div>
+
+    <!-- Scripts de Bootstrap -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

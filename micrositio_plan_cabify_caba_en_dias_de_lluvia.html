@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Cabify CABA | Días de lluvia – Plan de máxima rentabilidad</title>
+<style>
+  :root{
+    --bg:#0b1220;--fg:#e8eefc;--muted:#a8b3cf;--brand:#7c3aed;--brand2:#22d3ee;--card:#121a2b;--accent:#f59e0b;--ok:#22c55e;--warn:#fbbf24;--high:#f97316;--top:#ef4444;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:radial-gradient(1200px 600px at 80% -10%,rgba(34,211,238,.15),transparent),linear-gradient(180deg,#0b1220,#0b1220 60%,#0a0f1c);color:var(--fg);font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial}
+  a{color:var(--brand2)}
+  .container{max-width:1100px;margin:auto;padding:24px}
+  header{position:sticky;top:0;backdrop-filter:saturate(140%) blur(10px);background:rgba(11,18,32,.7);border-bottom:1px solid rgba(168,179,207,.15);z-index:50}
+  nav{display:flex;gap:14px;flex-wrap:wrap;align-items:center;justify-content:space-between;padding:10px 24px}
+  .pill{padding:8px 12px;border:1px solid rgba(168,179,207,.2);border-radius:999px;color:var(--muted)}
+  .cta{background:linear-gradient(135deg,var(--brand),var(--brand2));border:0;color:#0b1220;font-weight:700;padding:10px 14px;border-radius:12px;box-shadow:0 10px 20px rgba(124,58,237,.25);}
+  .hero{padding:56px 0 20px}
+  .hero h1{font-size:clamp(28px,4vw,48px);line-height:1.05;margin:0 0 10px}
+  .hero p{color:var(--muted);max-width:800px;font-size:clamp(15px,2.2vw,18px)}
+  .grid{display:grid;gap:18px}
+  .grid-3{grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+  .grid-2{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
+  .card{background:linear-gradient(180deg,rgba(34,45,74,.6),rgba(18,26,43,.8));border:1px solid rgba(168,179,207,.12);border-radius:18px;padding:18px;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+  h2{font-size:clamp(22px,3vw,30px);margin:8px 0 12px}
+  .kpi{display:flex;gap:10px;align-items:center}
+  .kpi .badge{padding:6px 10px;border-radius:10px;font-weight:700}
+  .legend{display:flex;gap:10px;flex-wrap:wrap}
+  .tag{padding:5px 10px;border-radius:999px;border:1px solid rgba(168,179,207,.2);color:var(--muted)}
+  table{width:100%;border-collapse:separate;border-spacing:0;overflow:hidden;border-radius:16px;border:1px solid rgba(168,179,207,.12)}
+  th,td{padding:10px 12px;text-align:center}
+  thead th{position:sticky;top:56px;background:rgba(18,26,43,.9);backdrop-filter:blur(6px);font-weight:700;color:#dbe6ff}
+  tbody tr:nth-child(odd){background:rgba(255,255,255,.02)}
+  td.label{font-weight:700;text-align:left}
+  .chip{display:inline-flex;gap:6px;align-items:center;justify-content:center;padding:6px 10px;border-radius:12px;font-weight:700;border:1px solid rgba(255,255,255,.08)}
+  .c-low{background:rgba(34,197,94,.12)}
+  .c-med{background:rgba(251,191,36,.14)}
+  .c-high{background:rgba(249,115,22,.14)}
+  .c-top{background:rgba(239,68,68,.16)}
+  .heat{display:grid;grid-template-columns:140px repeat(5,1fr);gap:0;border:1px solid rgba(168,179,207,.12);border-radius:16px;overflow:hidden}
+  .heat .row{display:contents}
+  .heat .cell{padding:12px;text-align:center;border-right:1px solid rgba(168,179,207,.08);border-bottom:1px solid rgba(168,179,207,.08)}
+  .heat .head{background:rgba(18,26,43,.9);font-weight:700}
+  .dot{font-size:20px}
+  details{border:1px solid rgba(168,179,207,.15);border-radius:14px;padding:10px 12px}
+  details+details{margin-top:10px}
+  summary{cursor:pointer;font-weight:700}
+  .foot{margin:40px 0 10px;color:var(--muted);font-size:14px;text-align:center}
+  .btn-row{display:flex;flex-wrap:wrap;gap:10px}
+</style>
+</head>
+<body>
+  <header>
+    <nav class="container">
+      <div class="pill">🌧️ Micrositio – Cabify CABA en días de lluvia</div>
+      <div class="btn-row">
+        <a href="#resumen" class="pill">Resumen</a>
+        <a href="#heatmap" class="pill">Heatmap $/h</a>
+        <a href="#zonas" class="pill">Zonas por horario</a>
+        <a href="#estrategias" class="pill">Estrategias</a>
+        <a href="#descargas" class="cta">Descargas</a>
+      </div>
+    </nav>
+  </header>
+
+  <main class="container">
+    <section class="hero" id="resumen">
+      <h1>Plan de <span style="background:linear-gradient(90deg,var(--brand),var(--brand2));-webkit-background-clip:text;background-clip:text;color:transparent">máxima rentabilidad</span> para <u>días de lluvia</u> en CABA</h1>
+      <p>Cuando llueve en Buenos Aires, la demanda sube, aparecen más viajes cortos y la tarifa dinámica se activa más seguido. Este micrositio reúne un plan accionable: horarios pico, zonas sugeridas y tácticas para convertir cada minuto en $$.</p>
+      <div class="grid grid-3">
+        <div class="card kpi"><span class="badge" style="background:rgba(34,197,94,.2)">📈 +10–30%</span><div><b>Demanda</b> promedio sobre días secos.</div></div>
+        <div class="card kpi"><span class="badge" style="background:rgba(245,158,11,.2)">🚦 +Demoras</span><div><b>Tiempo de viaje</b> mayor ⇒ mejor tarifa/minuto.</div></div>
+        <div class="card kpi"><span class="badge" style="background:rgba(239,68,68,.25)">🎯 Picos</span><div><b>17–20 h</b> y <b>20–0 h</b> (vie/sáb) son los reyes.</div></div>
+      </div>
+      <p style="margin-top:14px" class="legend">
+        <span class="tag">🟢 ≤ $12/h</span>
+        <span class="tag">🟡 $12–18/h</span>
+        <span class="tag">🟠 $18–25/h</span>
+        <span class="tag">🔴 +$25/h</span>
+      </p>
+    </section>
+
+    <section id="heatmap" class="card">
+      <h2>Gráfico de calor de rentabilidad ($/h) – lluvia</h2>
+      <div class="heat" role="table" aria-label="Heatmap de rentabilidad">
+        <div class="row head" role="row">
+          <div class="cell head" role="columnheader">Día</div>
+          <div class="cell head" role="columnheader">Madrugada (0–6)</div>
+          <div class="cell head" role="columnheader">Mañana (7–10)</div>
+          <div class="cell head" role="columnheader">Mediodía (12–14)</div>
+          <div class="cell head" role="columnheader">Tarde (17–20)</div>
+          <div class="cell head" role="columnheader">Noche (20–0)</div>
+        </div>
+        <!-- Lunes -->
+        <div class="row" role="row">
+          <div class="cell label" role="rowheader">Lunes</div>
+          <div class="cell c-med">🟡 15</div>
+          <div class="cell c-high">🟠 22</div>
+          <div class="cell c-med">🟡 18</div>
+          <div class="cell c-top">🔴 28</div>
+          <div class="cell c-high">🟠 22</div>
+        </div>
+        <!-- Martes -->
+        <div class="row" role="row">
+          <div class="cell label" role="rowheader">Martes</div>
+          <div class="cell c-med">🟡 15</div>
+          <div class="cell c-high">🟠 22</div>
+          <div class="cell c-med">🟡 18</div>
+          <div class="cell c-top">🔴 28</div>
+          <div class="cell c-high">🟠 22</div>
+        </div>
+        <!-- Miércoles -->
+        <div class="row" role="row">
+          <div class="cell label" role="rowheader">Miércoles</div>
+          <div class="cell c-med">🟡 15</div>
+          <div class="cell c-high">🟠 22</div>
+          <div class="cell c-med">🟡 18</div>
+          <div class="cell c-top">🔴 28</div>
+          <div class="cell c-high">🟠 22</div>
+        </div>
+        <!-- Jueves -->
+        <div class="row" role="row">
+          <div class="cell label" role="rowheader">Jueves</div>
+          <div class="cell c-med">🟡 16</div>
+          <div class="cell c-high">🟠 24</div>
+          <div class="cell c-med">🟡 20</div>
+          <div class="cell c-top">🔴 30</div>
+          <div class="cell c-top">🔴 25</div>
+        </div>
+        <!-- Viernes -->
+        <div class="row" role="row">
+          <div class="cell label" role="rowheader">Viernes</div>
+          <div class="cell c-high">🟠 18</div>
+          <div class="cell c-top">🔴 25</div>
+          <div class="cell c-med">🟡 20</div>
+          <div class="cell c-top">🔴 35</div>
+          <div class="cell c-top">🔴 32</div>
+        </div>
+        <!-- Sábado -->
+        <div class="row" role="row">
+          <div class="cell label" role="rowheader">Sábado</div>
+          <div class="cell c-high">🟠 20</div>
+          <div class="cell c-high">🟡 22</div>
+          <div class="cell c-med">🟡 20</div>
+          <div class="cell c-top">🔴 32</div>
+          <div class="cell c-top">🔴 35</div>
+        </div>
+        <!-- Domingo -->
+        <div class="row" role="row">
+          <div class="cell label" role="rowheader">Domingo</div>
+          <div class="cell c-high">🟠 20</div>
+          <div class="cell c-high">🟡 20</div>
+          <div class="cell c-med">🟡 18</div>
+          <div class="cell c-top">🔴 28</div>
+          <div class="cell c-high">🟠 25</div>
+        </div>
+      </div>
+      <p style="margin-top:10px;color:var(--muted)">Valores orientativos basados en patrones de demanda con lluvia. Los picos pueden subir más ante tormentas intensas o eventos masivos coincidentes.</p>
+    </section>
+
+    <section id="zonas" class="grid grid-2" style="margin-top:18px">
+      <div class="card">
+        <h2>🌅 Mañana (7–10)</h2>
+        <ul>
+          <li><b>Belgrano / Núñez</b> → oficinas y colegios.</li>
+          <li><b>Caballito / Flores</b> → viajes barriales + transbordos.</li>
+          <li><b>Retiro / Catalinas</b> → traslados corporativos, Aeroparque.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h2>🍔 Mediodía (12–14)</h2>
+        <ul>
+          <li><b>Microcentro / Tribunales</b> → almuerzos y trámites.</li>
+          <li><b>Palermo / Plaza Italia</b> → viajes cortos frecuentes.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h2>🚦 Tarde pico (17–20)</h2>
+        <ul>
+          <li><b>Retiro / Puerto Madero</b> → salida de oficinas.</li>
+          <li><b>Av. 9 de Julio</b> (Corrientes, Independencia, San Juan) → alta densidad de pedidos.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h2>🌙 Noche (20–0) & Madrugada (0–6)</h2>
+        <ul>
+          <li><b>Palermo / Villa Crespo</b> → bares, cenas, boliches.</li>
+          <li><b>San Telmo</b> → turismo y restaurantes.</li>
+          <li><b>Costanera Norte</b> → boliches; mayor pick-up bajo lluvia.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="estrategias" class="card" style="margin-top:18px">
+      <h2>🎯 Estrategias clave cuando llueve</h2>
+      <details open>
+        <summary>1) No rechaces viajes cortos (sube la mínima) 🚕</summary>
+        <p>Con lluvia, la tarifa mínima y la frecuencia de pedidos cortos aumentan. Hacer varios seguidos puede superar el ticket de un viaje largo aislado.</p>
+      </details>
+      <details>
+        <summary>2) Avenidas > calles internas 🛣️</summary>
+        <p>Preferí esperar y circular por avenidas con buen drenaje y salida a autopistas: 9 de Julio, Libertador, Lugones, San Juan/Independencia.</p>
+      </details>
+      <details>
+        <summary>3) Eventos + lluvia = combo explosivo 🎫🌧️</summary>
+        <p>Si hay recital o partido, activá “modo espera” 20–30 min antes de la salida. Ubicate a 2–3 cuadras, no en la puerta.</p>
+      </details>
+      <details>
+        <summary>4) Ventanas de descanso ☕</summary>
+        <p>Si llueve débil y intermitente, el valle suele ser 14–17 h. Aprovechá para descansar, cargar combustible o comer.</p>
+      </details>
+    </section>
+
+    <section id="descargas" class="card" style="margin-top:18px">
+      <h2>⬇️ Descargas útiles</h2>
+      <p>Versiones listas para llevar en tu celular o imprimir.</p>
+      <div class="btn-row">
+        <a class="cta" href="#" onclick="alert('Usá el PDF de lluvia que te compartí o pedí uno nuevo con tus zonas favoritas.');return false;">PDF – Plan lluvia</a>
+        <a class="pill" href="#" onclick="alert('Podemos generar un mapa interactivo (Folium) con tus puntos de espera preferidos para días de lluvia.');return false;">Mapa interactivo</a>
+      </div>
+      <p style="margin-top:10px;color:var(--muted)">¿Querés que lo personalice con tus barrios favoritos, metas de $/día y turnos disponibles? 💬</p>
+    </section>
+
+    <p class="foot">Hecho con ❤️ para conductores Cabify en Buenos Aires. Datos estimados; usá tu criterio y las condiciones del día.</p>
+  </main>
+</body>
+</html>

@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Domingo Madrugador – Estrategia Cabify para la Maratón de Buenos Aires</title>
+  <meta name="description" content="Micrositio con plan operativo, horarios pico, hotspots y tácticas para maximizar la rentabilidad como conductor Cabify durante la Maratón / Media Maratón de Buenos Aires." />
+  <style>
+    :root{
+      --bg:#0f1222;        /* fondo oscuro profundo */
+      --panel:#171a2b;     /* paneles */
+      --accent:#7CFFB2;    /* verde neón */
+      --accent2:#55CCFF;   /* celeste neón */
+      --warn:#FFB020;      /* aviso */
+      --danger:#FF5470;    /* alerta */
+      --ok:#40E09B;        /* ok */
+      --text:#e9ecf1;      /* texto principal */
+      --muted:#a3acc1;     /* texto secundario */
+      --card:#111426;      /* tarjetas */
+      --grid:#212642;      /* líneas */
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; font-family:Inter,system-ui,Segoe UI,Roboto,Arial; color:var(--text); background:radial-gradient(1200px 600px at 80% -10%, #1a1f3f 0, rgba(26,31,63,0) 60%),
+      radial-gradient(800px 500px at -10% 10%, #0c2b3c 0, rgba(12,43,60,0) 65%),
+      var(--bg);
+    }
+    .wrap{max-width:1200px; margin:0 auto; padding:24px}
+    header.hero{position:relative; border:1px solid var(--grid); background:linear-gradient(180deg, rgba(124,255,178,0.08), rgba(85,204,255,0.05)); padding:28px; border-radius:24px; overflow:hidden}
+    .badge{display:inline-flex; align-items:center; gap:8px; font-weight:600; color:var(--accent); background:#0a1f1a; border:1px solid #163e32; padding:6px 12px; border-radius:999px}
+    .hero h1{font-size:clamp(26px,4vw,44px); margin:14px 0}
+    .kpis{display:grid; grid-template-columns:repeat(4,1fr); gap:12px}
+    .kpi{background:var(--panel); border:1px solid var(--grid); border-radius:18px; padding:14px}
+    .kpi .big{font-size:28px; font-weight:800; color:var(--accent)}
+    .grid{display:grid; gap:18px}
+    @media(min-width:900px){.grid-2{grid-template-columns:1.2fr 1fr}.kpis{grid-template-columns:repeat(4,1fr)}}
+    @media(max-width:899px){.grid-2{grid-template-columns:1fr}.kpis{grid-template-columns:repeat(2,1fr)}}
+
+    .panel{background:var(--panel); border:1px solid var(--grid); border-radius:20px; padding:18px}
+    .panel h2{margin:0 0 12px 0; font-size:22px}
+    .muted{color:var(--muted)}
+    .pill{display:inline-block; padding:6px 10px; border-radius:999px; font-size:12px; border:1px solid var(--grid); background:var(--card)}
+
+    /* Timeline */
+    .timeline{display:grid; gap:12px}
+    .time-item{display:grid; grid-template-columns:120px 1fr; gap:12px; align-items:start; background:var(--card); border:1px dashed var(--grid); border-radius:16px; padding:12px}
+    .time-tag{font-weight:700; color:var(--accent2)}
+    .chips{display:flex; flex-wrap:wrap; gap:8px}
+    .chip{border:1px solid var(--grid); background:#0e1428; color:#d7e8ff; padding:6px 10px; border-radius:999px; font-size:12px}
+
+    /* Tabla heat */
+    table{width:100%; border-collapse:separate; border-spacing:0}
+    th,td{padding:10px 12px; text-align:center}
+    thead th{position:sticky; top:0; background:#0e1330; z-index:1}
+    tbody td{border-top:1px solid var(--grid)}
+    .hcell{border-radius:10px; padding:8px 10px; font-weight:700}
+    .lvl1{background:#0a2a1d; color:#a3f5c9}
+    .lvl2{background:#112731; color:#a8e6ff}
+    .lvl3{background:#2a1f10; color:#ffd9a1}
+    .lvl4{background:#2a1216; color:#ffb7c4}
+
+    /* Cards de hotspots */
+    .cards{display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:14px}
+    .card{background:var(--card); border:1px solid var(--grid); border-radius:16px; padding:14px}
+    .card h3{margin:6px 0 8px}
+    .meta{display:flex; gap:8px; flex-wrap:wrap}
+    .btn{cursor:pointer; border:none; background:linear-gradient(90deg,var(--accent),var(--accent2)); color:#061019; font-weight:800; padding:10px 14px; border-radius:12px; box-shadow:0 6px 20px rgba(124,255,178,.18); transition:transform .06s}
+    .btn:active{transform:translateY(1px)}
+
+    /* Avisos */
+    .note{display:flex; gap:12px; align-items:flex-start; background:#1b1630; border:1px solid #342b67; border-radius:16px; padding:12px}
+    .note strong{color:#c9bcff}
+
+    /* Footer */
+    footer{opacity:.8; font-size:13px; margin:24px 0}
+
+    /* Print */
+    @media print{
+      header.hero{background:#fff; color:#000; -webkit-print-color-adjust:exact; print-color-adjust:exact}
+      body{background:#fff; color:#000}
+      .btn{display:none}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="hero">
+      <span class="badge">🚖 Plan Pro · Domingo Madrugador (Maratón BA)</span>
+      <h1>Micrositio Operativo: Maximizar $/h en la franja <em>05:00–12:00</em></h1>
+      <p class="muted">Estrategia enfocada en pre‑largada, carrera en curso y post‑llegada para capturar viajes largos (Hoteles ↔ Aeropuertos ↔ Zona Norte). Incluye timeline, hotspots, tabla de rentabilidad y checklist.</p>
+      <div class="kpis" style="margin-top:14px">
+        <div class="kpi"><div class="muted">Ventana Clave</div><div class="big">09:30–11:30</div><div class="muted">Pico de demanda post‑llegada</div></div>
+        <div class="kpi"><div class="muted">Objetivo</div><div class="big">Viajes largos</div><div class="muted">AEP · EZE · Zona Norte</div></div>
+        <div class="kpi"><div class="muted">Rentab. pico</div><div class="big">$ alto</div><div class="muted">+ dinámica por congestión</div></div>
+        <div class="kpi"><div class="muted">Riesgo</div><div class="big" style="color:var(--warn)">Cortes</div><div class="muted">Plan de desvíos</div></div>
+      </div>
+    </header>
+
+    <section class="grid grid-2" style="margin-top:18px">
+      <div class="panel">
+        <h2>🕒 Timeline táctico</h2>
+        <div class="timeline">
+          <div class="time-item">
+            <div class="time-tag">04:30–06:30</div>
+            <div>
+              <strong>Pre‑largada:</strong> posicionate temprano antes de cortes.
+              <div class="chips" style="margin-top:8px">
+                <span class="chip">Base: <b>Cabildo & Monroe</b></span>
+                <span class="chip">Acceso: Panamericana → Cabildo</span>
+                <span class="chip">Demanda: acompañantes / hoteles</span>
+              </div>
+            </div>
+          </div>
+          <div class="time-item">
+            <div class="time-tag">07:00–09:00</div>
+            <div>
+              <strong>Carrera en curso:</strong> standby en <b>Belgrano/Núñez</b> para micro‑traslados y turistas cansados.
+              <div class="chips" style="margin-top:8px">
+                <span class="chip">Evitar troncales cortadas (Alcorta/Lugones)</span>
+                <span class="chip">Usar: <b>Cabildo</b> como columna</span>
+              </div>
+            </div>
+          </div>
+          <div class="time-item">
+            <div class="time-tag">09:30–12:00</div>
+            <div>
+              <strong>Post‑llegada (🔥PICO):</strong> activar “modo espera” cerca de <b>Alcorta & Monroe</b>. Priorizar viajes <b>AEP/EZE</b> y <b>Zona Norte</b>.
+              <div class="chips" style="margin-top:8px">
+                <span class="chip">Hoteles: Recoleta · Microcentro · Palermo</span>
+                <span class="chip">Aeropuertos: AEP · EZE</span>
+                <span class="chip">Cono Norte: Vicente López · San Isidro · Tigre</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2>📶 Tabla de rentabilidad estimada ($/h)</h2>
+        <p class="muted" style="margin-top:-6px">Valores relativos para priorizar franjas (con y sin lluvia).</p>
+        <table>
+          <thead>
+            <tr><th>Franja</th><th>Seco</th><th>Lluvia</th><th>Objetivo</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><span class="hcell lvl2">04:30–06:30</span></td><td>Media</td><td>Alta</td><td>Traslados a punto de largada</td></tr>
+            <tr><td><span class="hcell lvl2">07:00–09:00</span></td><td>Media</td><td>Alta</td><td>Acompañantes / turistas</td></tr>
+            <tr><td><span class="hcell lvl4">09:30–11:30</span></td><td>Muy Alta</td><td>Muy Alta</td><td>Regresos · Aeropuertos · Zona Norte</td></tr>
+            <tr><td><span class="hcell lvl3">11:30–12:00</span></td><td>Alta</td><td>Alta</td><td>Cierre de flujo principal</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="panel" style="margin-top:18px">
+      <h2>📍 Hotspots & zonas de espera</h2>
+      <p class="muted">Ubicate a 2–3 cuadras del embudo de gente. Evitá la puerta exacta para poder salir rápido.</p>
+      <div class="cards">
+        <div class="card">
+          <h3>Alcorta & Monroe (Epicentro)</h3>
+          <p class="muted">Llegada / Servicios · Núcleo de demanda post‑carrera.</p>
+          <div class="meta">
+            <span class="pill">🧭 -34.5555, -58.4495</span>
+            <span class="pill">Salida rápida: Libertador ↔ Cabildo</span>
+            <span class="pill">Modo espera desde 09:15</span>
+          </div>
+          <div style="margin-top:10px; display:flex; gap:10px">
+            <button class="btn" onclick="copy('-34.5555,-58.4495')">Copiar coordenadas</button>
+            <a class="btn" href="https://www.google.com/maps/search/?api=1&query=-34.5555,-58.4495" target="_blank" rel="noopener">Abrir en Maps</a>
+          </div>
+        </div>
+        <div class="card">
+          <h3>Base Cabildo & Monroe</h3>
+          <p class="muted">Punto seguro previo a cortes · acceso Panamericana.</p>
+          <div class="meta">
+            <span class="pill">🧭 -34.5636, -58.4587</span>
+            <span class="pill">Servicios cercanos</span>
+            <span class="pill">Ventana 04:30–06:30</span>
+          </div>
+          <div style="margin-top:10px; display:flex; gap:10px">
+            <button class="btn" onclick="copy('-34.5636,-58.4587')">Copiar coordenadas</button>
+            <a class="btn" href="https://www.google.com/maps/search/?api=1&query=-34.5636,-58.4587" target="_blank" rel="noopener">Abrir en Maps</a>
+          </div>
+        </div>
+        <div class="card">
+          <h3>Hoteles (Recoleta · Microcentro · Palermo)</h3>
+          <p class="muted">Regresos a pie de hotel · demanda internacional.</p>
+          <div class="meta">
+            <span class="pill">Recoleta: -34.5883,-58.3925</span>
+            <span class="pill">Microcentro: -34.6035,-58.3816</span>
+            <span class="pill">Palermo: -34.5880,-58.4300</span>
+          </div>
+        </div>
+        <div class="card">
+          <h3>Aeropuertos (AEP · EZE)</h3>
+          <p class="muted">Viajes más rentables del turno.</p>
+          <div class="meta">
+            <span class="pill">AEP: -34.5592,-58.4156</span>
+            <span class="pill">EZE: -34.8128,-58.5392</span>
+            <span class="pill">Filtrar si tu app lo permite</span>
+          </div>
+        </div>
+        <div class="card">
+          <h3>Cono Norte (Vicente López · San Isidro · Tigre)</h3>
+          <p class="muted">Altísima probabilidad de regresos largos.</p>
+          <div class="meta">
+            <span class="pill">Acceso: Lugones / Panamericana</span>
+            <span class="pill">Peajes: ver saldo Telepase</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="grid grid-2" style="margin-top:18px">
+      <div class="panel">
+        <h2>🧭 Desvíos & cortes probables</h2>
+        <ul>
+          <li><strong>Figueroa Alcorta</strong> y zonas aledañas: corte parcial/total durante el evento.</li>
+          <li><strong>Av. Del Libertador</strong>: carriles restringidos cerca de la llegada.</li>
+          <li><strong>Acceso Norte / Lugones</strong>: ingresos intermitentes. Preferir <b>Cabildo</b> como columna.</li>
+          <li>Evitar embudos; moverse por <b>Juramento · Congreso · Monroe</b> para aproximación.</li>
+        </ul>
+        <div class="note"><span>⚠️</span><div><strong>Tip:</strong> mantente a 2–3 cuadras del vallado. La app te prioriza por cercanía, no por estar en la puerta.</div></div>
+      </div>
+      <div class="panel">
+        <h2>💡 Tácticas de optimización</h2>
+        <ul>
+          <li>Activar “modo espera” desde <b>09:15</b> con tanque y batería listos.</li>
+          <li>Ser selectivo con viajes ultra cortos en el pico (si hay dinámica); priorizar AEP/EZE / Zona Norte.</li>
+          <li>Coordinar punto de encuentro por mensaje ("estoy a 2 cuadras sobre Cabildo").</li>
+          <li>Guardar atajos en favoritos (Waze/Maps) para rutas de escape.</li>
+        </ul>
+        <div class="note"><span>🌧️</span><div><strong>Si llueve:</strong> todo el flujo sube una categoría de rentabilidad. Evitá calles anegadas; operar por avenidas.</div></div>
+      </div>
+    </section>
+
+    <section class="panel" style="margin-top:18px">
+      <h2>✅ Checklist previo (5 minutos)</h2>
+      <ul>
+        <li>⛽ Combustible suficiente para 3 horas sin parar.</li>
+        <li>🔋 Celular + powerbank cargados.</li>
+        <li>🧾 Telepase / efectivo para peajes a Zona Norte y EZE.</li>
+        <li>🗺️ Rutas guardadas a <b>AEP</b> y <b>EZE</b>.</li>
+        <li>📲 Mensajes rápidos predefinidos ("Estoy a 2 cuadras sobre Cabildo").</li>
+        <li>🧼 Toallas / bolsas para corredor mojado o con calor.</li>
+      </ul>
+      <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:12px">
+        <button class="btn" onclick="window.print()">🖨️ Imprimir plan</button>
+        <button class="btn" onclick="scrollTo(0,0)">⬆️ Volver arriba</button>
+      </div>
+    </section>
+
+    <footer>
+      Hecho para conductores Cabify en CABA · Optimizado para el domingo de Maratón / Media Maratón. Este micrositio es informativo; adaptá en tiempo real según la app y el tránsito.
+    </footer>
+  </div>
+
+  <script>
+    function copy(text){
+      navigator.clipboard.writeText(text).then(()=>{
+        const prev=document.querySelector('#copied');
+        if(prev) prev.remove();
+        const tag=document.createElement('div');
+        tag.id='copied';
+        tag.textContent='Coordenadas copiadas';
+        tag.style.position='fixed';
+        tag.style.right='20px';
+        tag.style.bottom='20px';
+        tag.style.padding='10px 14px';
+        tag.style.background='linear-gradient(90deg,var(--accent),var(--accent2))';
+        tag.style.color='#061019';
+        tag.style.fontWeight='800';
+        tag.style.borderRadius='12px';
+        tag.style.boxShadow='0 10px 30px rgba(0,0,0,.35)';
+        document.body.appendChild(tag);
+        setTimeout(()=>tag.remove(), 1600);
+      });
+    }
+  </script>
+</body>
+</html>

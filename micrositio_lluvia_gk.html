@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Eventos CABA 2025: Zonas de Espera para Cabify</title>
+  <script src="https://cdn.jsdelivr.net/npm/react@18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/babel-standalone@7.24.7/babel.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg) scale(1); }
+      100% { transform: rotate(360deg) scale(1.2); }
+    }
+    .emoji-blink { animation: blink 1.5s infinite; }
+    .emoji-spin:hover { animation: spin 0.5s ease-in-out; display: inline-block; }
+  </style>
+</head>
+<body class="bg-gray-900 text-white font-sans">
+  <div id="root"></div>
+  <script type="text/babel">
+    const { useState } = React;
+
+    const venues = [
+      { id: 1, name: "Teatro Colón", type: "Teatro", barrio: "Microcentro", address: "Cerrito 628", streets: "Av. 9 de Julio (entre Tucumán y Viamonte); Cerrito (cerca de subte Línea D)", strategy: "Calle ancha con tráfico constante; resguardo en subte. Evento de música clásica (20:00) – espera desde 19:30 para regresos a hoteles o Palermo.", emoji: "🎭" },
+      { id: 2, name: "Teatro Gran Rex", type: "Teatro", barrio: "Microcentro", address: "Av. Corrientes 857", streets: "Av. Corrientes (entre Suipacha y Esmeralda); Florida (peatonal con galerías)", strategy: "Áreas con techos en galerías; menos inundación. Posible evento hoy – enfócate en salidas nocturnas.", emoji: "🎭" },
+      { id: 3, name: "Centro Cultural Kirchner (CCK)", type: "Centro Cultural", barrio: "Microcentro", address: "Sarmiento 151", streets: "Av. Leandro N. Alem (entre Corrientes y Córdoba); Paseo Colón", strategy: "Avenidas elevadas; resguardo en edificios. Ideal para eventos culturales; posible Tango Festival – espera post-19:00.", emoji: "🏛️" },
+      { id: 4, name: "La Rural", type: "Centro de Convenciones", barrio: "Palermo", address: "Av. Sarmiento 2704", streets: "Av. Santa Fe (entre Plaza Italia y Av. Sarmiento); Av. Las Heras", strategy: "Zonas con árboles y subte para resguardo. Ferias frecuentes; si hay congreso, espera en tarde/noche para aeropuertos.", emoji: "🏟️" },
+      { id: 5, name: "Centro de Convenciones Buenos Aires (CEC)", type: "Centro de Convenciones", barrio: "Recoleta", address: "Av. Figueroa Alcorta 2099", streets: "Av. Figueroa Alcorta (entre Salguero y Pueyrredón); Av. del Libertador", strategy: "Avenidas elevadas con buen drenaje. Convenciones corporativas; más solicitudes a hoteles en lluvia.", emoji: "🏟️" },
+      { id: 6, name: "Estadio Monumental (River Plate)", type: "Estadio", barrio: "Núñez", address: "Av. Figueroa Alcorta 7597", streets: "Av. Udaondo (entre Figueroa Alcorta y Lugones); Av. del Libertador", strategy: "Calles anchas con menos tráfico en lluvia. Hoy sin partido mayor, pero útil para traslados en zona norte.", emoji: "⚽" },
+      { id: 7, name: "La Bombonera (Boca Juniors)", type: "Estadio", barrio: "La Boca", address: "Brandsen 805", streets: "Av. Paseo Colón (entre Martín García y Brandsen); Av. Montes de Oca", strategy: "Evita calles bajas de La Boca (inundaciones); usa avenidas. Hoy sin evento mayor, pero turístico – espera para turistas mojados.", emoji: "⚽" },
+      { id: 8, name: "Movistar Arena", type: "Arena", barrio: "Villa Soldati", address: "Av. Olímpica y Coronel Roca", streets: "Av. Escalada (entre Roca y 27 de Febrero); Av. Fernández de la Cruz", strategy: "Zonas sureñas con avenidas amplias. Conciertos frecuentes; posible recital menor – espera en salidas nocturnas.", emoji: "🎤" },
+      { id: 9, name: "Luna Park", type: "Arena", barrio: "San Nicolás", address: "Av. Madero 420", streets: "Av. Corrientes (entre Madero y Alem); Bouchard", strategy: "Centro con resguardo en subte. Hoy sin gran show, pero versátil para boxeo o conciertos – espera en tarde.", emoji: "🥊" },
+      { id: 10, name: "Usina del Arte", type: "Centro Cultural", barrio: "La Boca", address: "Agustín R. Caffarena 1", streets: "Av. Don Pedro de Mendoza (entre Paseo Colón y Brasil); Av. Brasil", strategy: "Evita inundaciones en La Boca; avenidas con acceso. Posible cierre de Tango BA Festival – espera desde 18:00 para regresos.", emoji: "🎨" }
+    ];
+
+    function VenueRow({ venue }) {
+      return (
+        <tr className="border-b border-gray-700 hover:bg-gray-800 transition-all duration-300">
+          <td className="py-4 px-6"><span className="emoji-spin">{venue.emoji}</span> {venue.name}</td>
+          <td className="py-4 px-6">{venue.type}</td>
+          <td className="py-4 px-6">{venue.barrio}</td>
+          <td className="py-4 px-6">{venue.streets}</td>
+          <td className="py-4 px-6">{venue.strategy}</td>
+        </tr>
+      );
+    }
+
+    function App() {
+      const [filterType, setFilterType] = useState("Todos");
+      const [filterBarrio, setFilterBarrio] = useState("Todos");
+
+      const filteredVenues = venues.filter(venue => 
+        (filterType === "Todos" || venue.type === filterType) &&
+        (filterBarrio === "Todos" || venue.barrio === filterBarrio)
+      );
+
+      const types = ["Todos", ...new Set(venues.map(v => v.type))];
+      const barrios = ["Todos", ...new Set(venues.map(v => v.barrio))];
+
+      return (
+        <div className="min-h-screen bg-gradient-to-b from-gray-900 to-blue-900 p-6">
+          <header className="text-center mb-8">
+            <h1 className="text-4xl font-bold text-white flex items-center justify-center gap-2">
+              Eventos CABA 2025: Zonas de Espera para Cabify 🚗
+              <span className="emoji-blink">🌧️</span>
+            </h1>
+            <p className="text-lg text-gray-300 mt-2">
+              Maximiza tus ganancias hoy, martes 19 de agosto, con lluvia en Buenos Aires
+            </p>
+            <div className="bg-blue-800 p-4 rounded-lg mt-4 shadow-lg">
+              <p className="text-white">
+                <span className="emoji-spin">☔</span> <strong>Tips para lluvia:</strong> Chequea limpiaparabrisas, evita calles bajas (ej. interior de La Boca), prioriza avenidas elevadas. Demanda sube 20-30% en días lluviosos. ¡Activa la app y espera cerca de eventos!
+              </p>
+            </div>
+          </header>
+          <section className="mb-6 flex flex-wrap gap-4 justify-center">
+            <div>
+              <label className="text-white mr-2">Filtrar por Tipo:</label>
+              <select 
+                className="bg-gray-800 text-white p-2 rounded-lg"
+                onChange={(e) => setFilterType(e.target.value)}
+                value={filterType}
+              >
+                {types.map(type => (
+                  <option key={type} value={type}>{type}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="text-white mr-2">Filtrar por Barrio:</label>
+              <select 
+                className="bg-gray-800 text-white p-2 rounded-lg"
+                onChange={(e) => setFilterBarrio(e.target.value)}
+                value={filterBarrio}
+              >
+                {barrios.map(barrio => (
+                  <option key={barrio} value={barrio}>{barrio}</option>
+                ))}
+              </select>
+            </div>
+          </section>
+          <section className="overflow-x-auto">
+            <table className="w-full text-left bg-gray-800 rounded-lg shadow-lg">
+              <thead className="bg-blue-900 text-white">
+                <tr>
+                  <th className="py-4 px-6">Venue</th>
+                  <th className="py-4 px-6">Tipo</th>
+                  <th className="py-4 px-6">Barrio</th>
+                  <th className="py-4 px-6">Calles de Espera</th>
+                  <th className="py-4 px-6">Estrategia</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredVenues.map(venue => (
+                  <VenueRow key={venue.id} venue={venue} />
+                ))}
+              </tbody>
+            </table>
+          </section>
+          <footer className="mt-8 text-center text-gray-400">
+            <p>Desarrollado para conductores de Cabify | Datos basados en eventos 2025 y patrones de demanda</p>
+          </footer>
+        </div>
+      );
+    }
+
+    ReactDOM.render(<App />, document.getElementById('root'));
+  </script>
+</body>
+</html>

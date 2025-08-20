@@ -1,0 +1,249 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Guía para conductores de Cabify en Buenos Aires: maximiza tus ganancias con estrategias, horarios pico y zonas de alta demanda.">
+    <meta name="keywords" content="Cabify Buenos Aires, maximizar ganancias Cabify, horarios pico Cabify, zonas alta demanda, conductor Cabify Argentina">
+    <meta name="author" content="Cabify Buenos Aires">
+    <meta name="robots" content="index, follow">
+    <!-- Open Graph for social media -->
+    <meta property="og:title" content="Guía para Conductores de Cabify en Buenos Aires">
+    <meta property="og:description" content="Descubre cómo maximizar tus ganancias como conductor de Cabify en Buenos Aires con estrategias probadas, horarios pico y zonas de alta demanda.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.example.com/cabify-buenos-aires">
+    <meta property="og:image" content="https://www.example.com/images/cabify-buenos-aires.jpg">
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Guía para Conductores de Cabify en Buenos Aires">
+    <meta name="twitter:description" content="Estrategias, horarios pico y zonas de alta demanda para maximizar tus ingresos como conductor de Cabify en Buenos Aires.">
+    <meta name="twitter:image" content="https://www.example.com/images/cabify-buenos-aires.jpg">
+    <title>Guía para Conductores de Cabify en Buenos Aires: Maximiza tus Ganancias</title>
+    <!-- Tailwind CSS CDN for styling -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 font-sans">
+    <header class="bg-blue-600 text-white py-6">
+        <div class="container mx-auto text-center">
+            <h1 class="text-3xl md:text-4xl font-bold">🚖 ¡Bienvenido, Conductor de Cabify! 💰</h1>
+            <p class="mt-2 text-lg">Maximiza tus ganancias en Buenos Aires con estrategias probadas, horarios pico y zonas de alta demanda. <span class="sr-only">Aprovecha cada viaje al máximo</span></p>
+            <a href="#strategies" class="mt-4 inline-block bg-yellow-500 text-black font-semibold py-2 px-4 rounded hover:bg-yellow-600">¡Empezar ahora!</a>
+        </div>
+    </header>
+
+    <main class="container mx-auto py-8 px-4">
+        <!-- Rentabilidad Table -->
+        <section aria-labelledby="rentabilidad">
+            <h2 id="rentabilidad" class="text-2xl font-bold mb-4">Tabla de Rentabilidad por Día y Horario ($/h) 📊</h2>
+            <p class="mb-4">Rentabilidad bruta estimada para un Nissan March en Buenos Aires.</p>
+            <div class="overflow-x-auto">
+                <table class="w-full border-collapse bg-white shadow-md">
+                    <thead>
+                        <tr class="bg-gray-200">
+                            <th class="border p-2">Día de la Semana</th>
+                            <th class="border p-2">Madrugada (0-7)</th>
+                            <th class="border p-2">Mañana (7-10)</th>
+                            <th class="border p-2">Mediodía (12-14)</th>
+                            <th class="border p-2">Tarde (17-20)</th>
+                            <th class="border p-2">Noche (20-0)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="border p-2">Lunes</td>
+                            <td class="border p-2">$8 🟢 <span class="sr-only">Baja</span></td>
+                            <td class="border p-2">$15 🟡 <span class="sr-only">Media</span></td>
+                            <td class="border p-2">$10 🟢 <span class="sr-only">Baja</span></td>
+                            <td class="border p-2">$20 🟠 <span class="sr-only">Media-Alta</span></td>
+                            <td class="border p-2">$18 🟡 <span class="sr-only">Media</span></td>
+                        </tr>
+                        <tr>
+                            <td class="border p-2">Martes</td>
+                            <td class="border p-2">$8 🟢 <span class="sr-only">Baja</span></td>
+                            <td class="border p-2">$15 🟡 <span class="sr-only">Media</span></td>
+                            <td class="border p-2">$10 🟢 <span class="sr-only">Baja</span></td>
+                            <td class="border p-2">$20 🟠 <span class="sr-only">Media-Alta</span></td>
+                            <td class="border p-2">$18 🟡 <span class="sr-only">Media</span></td>
+                        </tr>
+                        <tr>
+                            <td class="border p-2">Miércoles</td>
+                            <td class="border p-2">$8 🟢 <span class="sr-only">Baja</span></td>
+                            <td class="border p-2">$15 🟡 <span class="sr-only">Media</span></td>
+                            <td class="border p-2">$10 🟢 <span class="sr-only">Baja</span></td>
+                            <td class="border p-2">$20 🟠 <span class="sr-only">Media-Alta</span></td>
+                            <td class="border p-2">$18 🟡 <span class="sr-only">Media</span></td>
+                        </tr>
+                        <tr>
+                            <td class="border p-2">Jueves</td>
+                            <td class="border p-2">$8 🟢 <span class="sr-only">Baja</span></td>
+                            <td class="border p-2">$15 🟡 <span class="sr-only">Media</span></td>
+                            <td class="border p-2">$10 🟢 <span class="sr-only">Baja</span></td>
+                            <td class="border p-2">$25 🔴 <span class="sr-only">Alta</span></td>
+                            <td class="border p-2">$25 🔴 <span class="sr-only">Alta</span></td>
+                        </tr>
+                        <tr>
+                            <td class="border p-2">Viernes</td>
+                            <td class="border p-2">$18 🟠 <span class="sr-only">Media-Alta</span></td>
+                            <td class="border p-2">$15 🟡 <span class="sr-only">Media</span></td>
+                            <td class="border p-2">$18 🟠 <span class="sr-only">Media-Alta</span></td>
+                            <td class="border p-2">$25 🔴 <span class="sr-only">Alta</span></td>
+                            <td class="border p-2">$25 🔴 <span class="sr-only">Alta</span></td>
+                        </tr>
+                        <tr>
+                            <td class="border p-2">Sábado</td>
+                            <td class="border p-2">$30 🔴 <span class="sr-only">Alta</span></td>
+                            <td class="border p-2">$22 🟠 <span class="sr-only">Media-Alta</span></td>
+                            <td class="border p-2">$16 🟡 <span class="sr-only">Media</span></td>
+                            <td class="border p-2">$28 🔴 <span class="sr-only">Alta</span></td>
+                            <td class="border p-2">$35 🔴 <span class="sr-only">Alta</span></td>
+                        </tr>
+                        <tr>
+                            <td class="border p-2">Domingo</td>
+                            <td class="border p-2">$30 🔴 <span class="sr-only">Alta</span></td>
+                            <td class="border p-2">$12 🟢 <span class="sr-only">Baja</span></td>
+                            <td class="border p-2">$16 🟡 <span class="sr-only">Media</span></td>
+                            <td class="border p-2">$22 🟠 <span class="sr-only">Media-Alta</span></td>
+                            <td class="border p-2">$35 🔴 <span class="sr-only">Alta</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="mt-4">
+                <p class="font-semibold">Leyenda:</p>
+                <ul class="list-disc pl-6">
+                    <li>🔴 Alta ($25/h o más)</li>
+                    <li>🟠 Media-Alta ($18-$24/h)</li>
+                    <li>🟡 Media ($12-$17/h)</li>
+                    <li>🟢 Baja (menos de $12/h)</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Strategies Section -->
+        <section aria-labelledby="estrategias" class="mt-8">
+            <h2 id="estrategias" class="text-2xl font-bold mb-4">Estrategias para Maximizar tus Ganancias 💡</h2>
+            <p class="mb-4">Guías detalladas para cada día y situación en Buenos Aires. ¡Elige la que mejor se adapte a tu rutina!</p>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <article class="bg-white p-4 shadow-md rounded">
+                    <h3 class="text-xl font-semibold">Domingo Madrugador: Maratón BA 🏃‍♂️</h3>
+                    <p>Aprovecha los eventos deportivos y la alta demanda en zonas céntricas.</p>
+                    <a href="/estrategias/domingo-maraton" class="text-blue-600 hover:underline">Ver estrategia</a>
+                </article>
+                <article class="bg-white p-4 shadow-md rounded">
+                    <h3 class="text-xl font-semibold">Días de Lluvia ☔</h3>
+                    <p>Descubre cómo aumentar tus ganancias cuando llueve en Buenos Aires.</p>
+                    <a href="/estrategias/dias-lluvia" class="text-blue-600 hover:underline">Ver estrategia</a>
+                </article>
+                <article class="bg-white p-4 shadow-md rounded">
+                    <h3 class="text-xl font-semibold">Semana y Martes 📅</h3>
+                    <p>Optimiza tus horarios en días laborales y martes de alta demanda.</p>
+                    <a href="/estrategias/semana-martes" class="text-blue-600 hover:underline">Ver estrategia</a>
+                </article>
+                <article class="bg-white p-4 shadow-md rounded">
+                    <h3 class="text-xl font-semibold">Zonas y Horarios Pico 🗺️</h3>
+                    <p>Conoce las mejores zonas y horarios para trabajar en CABA.</p>
+                    <a href="/estrategias/zonas-horarios" class="text-blue-600 hover:underline">Ver estrategia</a>
+                </article>
+                <article class="bg-white p-4 shadow-md rounded">
+                    <h3 class="text-xl font-semibold">Rentabilidad en CABA 💰</h3>
+                    <p>Guía completa para maximizar tus ingresos como conductor de Cabify.</p>
+                    <a href="/estrategias/rentabilidad-caba" class="text-blue-600 hover:underline">Ver estrategia</a>
+                </article>
+            </div>
+        </section>
+
+        <!-- Quick Tips Section -->
+        <section aria-labelledby="consejos" class="mt-8">
+            <h2 id="consejos" class="text-2xl font-bold mb-4">Consejos Rápidos para Conductores 🚀</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <article class="bg-white p-4 shadow-md rounded">
+                    <h3 class="text-xl font-semibold">Mantenimiento del Vehículo</h3>
+                    <p>Un auto en buen estado atrae mejores calificaciones y más viajes.</p>
+                </article>
+                <article class="bg-white p-4 shadow-md rounded">
+                    <h3 class="text-xl font-semibold">Buen Trato al Pasajero</h3>
+                    <p>Sonríe, sé amable y ofrece un servicio de calidad para obtener mejores propinas.</p>
+                </article>
+                <article class="bg-white p-4 shadow-md rounded">
+                    <h3 class="text-xl font-semibold">Ofrece Extras</h3>
+                    <p>Agua, cargador de teléfono o música agradable pueden hacer la diferencia.</p>
+                </article>
+            </div>
+        </section>
+    </main>
+
+    <=line
+
+    <footer class="bg-gray-800 text-white py-6 mt-8">
+        <div class="container mx-auto text-center">
+            <p>Hecho para conductores de Cabify en Buenos Aires. ¡Conduce seguro y maximiza tus ganancias! 🚗💨</p>
+        </div>
+    </footer>
+
+    <!-- Schema.org Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Article",
+        "headline": "Guía para Conductores de Cabify en Buenos Aires",
+        "description": "Estrategias, horarios pico y zonas de alta demanda para maximizar tus ganancias como conductor de Cabify en Buenos Aires.",
+        "author": {
+            "@type": "Organization",
+            "name": "Cabify Buenos Aires"
+        },
+        "publisher": {
+            "@type": "Organization",
+            "name": "Cabify Buenos Aires",
+            "logo": {
+                "@type": "ImageObject",
+                "url": "https://www.example.com/images/logo-cabify.png"
+            }
+        },
+        "datePublished": "2025-08-19",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https://www.example.com/cabify-buenos-aires"
+        }
+    }
+    </script>
+</body>
+</html>

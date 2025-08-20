@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Micrositio — Rentabilidad máxima Cabify (CABA)</title>
+  <style>
+    :root{--bg:#0f1724;--card:#0b1220;--muted:#94a3b8;--accent:#06b6d4;--accent2:#f97316;--success:#10b981;--danger:#ef4444}
+    *{box-sizing:border-box;font-family:Inter,ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial}
+    body{margin:0;background:linear-gradient(180deg,#071023 0%, #071827 60%);color:#e6eef6}
+    header{padding:28px 32px;border-bottom:1px solid rgba(255,255,255,0.04);display:flex;align-items:center;gap:18px}
+    .logo{width:56px;height:56px;background:linear-gradient(135deg,var(--accent),#7c3aed);border-radius:12px;display:flex;align-items:center;justify-content:center;font-weight:800;color:#021022}
+    h1{font-size:20px;margin:0}
+    p.lead{margin:6px 0 0;color:var(--muted)}
+    main{padding:28px 32px;display:grid;grid-template-columns:420px 1fr;gap:22px}
+    .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:16px;border-radius:12px;border:1px solid rgba(255,255,255,0.03)}
+    .panel-title{font-weight:700;margin-bottom:8px}
+
+    /* Table heatmap */
+    table{width:100%;border-collapse:collapse;font-size:13px}
+    th,td{padding:8px 6px;text-align:center;border-bottom:1px solid rgba(255,255,255,0.02)}
+    th{color:var(--muted);font-weight:600;font-size:12px}
+    td .cell{display:inline-block;padding:6px 10px;border-radius:8px;min-width:44px}
+
+    .legend{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+    .legend .item{display:flex;gap:8px;align-items:center;padding:6px}
+    .dot{width:14px;height:14px;border-radius:4px}
+
+    /* color classes */
+    .g-low{background:#22c55e;color:#021014} /* green */
+    .g-med{background:#facc15;color:#0b0b00} /* yellow */
+    .g-high{background:#fb923c;color:#2b0b00} /* orange */
+    .g-hot{background:#ef4444;color:#fff} /* red */
+
+    /* right column layout */
+    .right-grid{display:grid;grid-template-columns:1fr 420px;gap:18px}
+    .explain{line-height:1.5;color:var(--muted);font-size:14px}
+
+    /* interactive heatmap */
+    .heatmap{display:grid;grid-template-columns:repeat(8,1fr);gap:6px}
+    .hm-cell{padding:10px;border-radius:8px;text-align:center;font-weight:700}
+
+    footer{padding:18px 32px;color:var(--muted);font-size:13px;border-top:1px solid rgba(255,255,255,0.02)}
+
+    /* map-like zones */
+    .zones{display:flex;flex-direction:column;gap:8px}
+    .zone-badge{padding:8px;border-radius:8px;background:linear-gradient(90deg,rgba(255,255,255,0.01),rgba(255,255,255,0.02));display:flex;align-items:center;gap:12px}
+    .zone-color{width:12px;height:12px;border-radius:3px}
+
+    /* buttons */
+    .controls{display:flex;gap:8px;align-items:center}
+    button.primary{background:linear-gradient(90deg,var(--accent),#7c3aed);color:#021022;padding:8px 12px;border-radius:8px;border:0;font-weight:700}
+    button.ghost{background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--muted);padding:8px 12px;border-radius:8px}
+
+    @media (max-width:1100px){main{grid-template-columns:1fr;}.right-grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">RC</div>
+    <div>
+      <h1>Rentabilidad máxima — Chofer Cabify (CABA)</h1>
+      <p class="lead">Estimaciones por día y rango horario. Basado en patrones laborales, ocio nocturno, aeropuertos y movilidad urbana.</p>
+    </div>
+  </header>
+
+  <main>
+    <section class="card">
+      <div class="panel-title">Leyenda & Escala</div>
+      <div class="legend" style="margin-bottom:12px">
+        <div class="item"><div class="dot" style="background:#22c55e"></div><div>🟢 Baja (≤ $12/h)</div></div>
+        <div class="item"><div class="dot" style="background:#facc15"></div><div>🟡 Media ($12–18/h)</div></div>
+        <div class="item"><div class="dot" style="background:#fb923c"></div><div>🟠 Alta ($18–25/h)</div></div>
+        <div class="item"><div class="dot" style="background:#ef4444"></div><div>🔴 Muy alta (+ $25/h)</div></div>
+      </div>
+      <div style="margin-bottom:10px;color:var(--muted);font-size:13px">Rangos horarios usados:</div>
+      <ul style="color:var(--muted);margin:0 0 12px 18px;font-size:13px">
+        <li>Madrugada (0-6)</li>
+        <li>Mañana (6-10)</li>
+        <li>Media mañana (10-12)</li>
+        <li>Mediodía (12-14)</li>
+        <li>Tarde (14-17)</li>
+        <li>Tarde pico (17-20)</li>
+        <li>Noche (20-0)</li>
+      </ul>
+      <div class="panel-title">Descargar</div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <button class="primary" id="downloadBtn">Descargar HTML</button>
+        <button class="ghost" id="copyBtn">Copiar al portapapeles</button>
+      </div>
+    </section>
+
+    <section class="card">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:12px">
+        <div>
+          <div class="panel-title">1) Tabla completa de rentabilidad ($/h)</div>
+          <div style="color:var(--muted);font-size:13px;margin-bottom:8px">Tabla con los 7 días y los 7 rangos horarios. Haz clic en cualquier celda para ver la explicación y zona sugerida.</div>
+        </div>
+        <div class="controls">
+          <select id="dayFilter" style="padding:8px;border-radius:8px;background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--muted)">
+            <option value="all">Mostrar todos los días</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="overflow:auto;max-height:420px;padding-right:8px">
+        <!-- Table inserted by JS -->
+        <div id="tableWrap"></div>
+      </div>
+    </section>
+
+    <div class="right-grid">
+      <div class="card">
+        <div class="panel-title">2) Tabla de picos + Zona de máxima potencialidad</div>
+        <div style="color:var(--muted);font-size:13px;margin-bottom:12px">Picos por día con la zona donde el chofer típicamente puede obtener mayor $/h.</div>
+        <div id="peaksWrap"></div>
+        <hr style="border:none;border-top:1px solid rgba(255,255,255,0.03);margin:12px 0" />
+        <div class="panel-title">Zonas sugeridas - Descripción</div>
+        <div class="zones" id="zonesList"></div>
+      </div>
+
+      <div class="card">
+        <div class="panel-title">Mini heatmap interactivo</div>
+        <div style="color:var(--muted);font-size:13px;margin-bottom:8px">Pasa el cursor por un horario para ver su valor y la zona recomendada.</div>
+        <div id="miniHeat" style="display:grid;grid-template-columns:repeat(7,1fr);gap:6px"></div>
+        <div style="height:12px"></div>
+        <div class="panel-title">Interpretación rápida</div>
+        <div class="explain">
+          <ul style="margin:6px 0 0 18px;color:var(--muted)">
+            <li>Viernes y sábado noche son los periodos de mayor rentabilidad.</li>
+            <li>Las mañanas laborables concentran viajes corporativos y aeropuertos.</li>
+            <li>Madrugada es variable: muy alta el sábado por salidas, baja el resto de la semana.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    Hecho con ❤️ · Estimaciones indicativas. Estas cifras son orientativas y no sustituyen datos reales del operador ni registros contables.
+  </footer>
+
+  <script>
+    // Data model (from prior table provided to assistant)
+    const data = {
+      headers: ['Día / Hora','Madrugada (0-6)','Mañana (6-10)','Media Mañana (10-12)','Mediodía (12-14)','Tarde (14-17)','Tarde Pico (17-20)','Noche (20-0)'],
+      rows: [
+        {day:'Lunes', vals:[8,18,14,15,14,20,15], zone:'Microcentro, Retiro, Puerto Madero (viajes laborales + Aeroparque)'},
+        {day:'Martes', vals:[8,18,14,15,14,20,15], zone:'Microcentro + Zona Norte (corporativos San Isidro/Tigre)'},
+        {day:'Miércoles', vals:[9,18,15,15,15,22,16], zone:'Microcentro, Tribunales, Once → viajes a periféricos'},
+        {day:'Jueves', vals:[12,19,15,16,16,25,22], zone:'Palermo, Belgrano, Núñez (after office + Aeroparque)'},
+        {day:'Viernes', vals:[14,20,16,17,16,28,30], zone:'Palermo Soho/Hollywood, Costanera Norte, San Telmo'},
+        {day:'Sábado', vals:[26,14,15,15,15,26,35], zone:'Palermo, Puerto Madero, Recoleta, boliches Costanera'},
+        {day:'Domingo', vals:[20,10,12,12,14,20,22], zone:'Costanera, regreso desde Zona Norte, eventos deportivos'}
+      ]
+    }
+
+    // helpers
+    function clsFor(v){ if(v<=12) return 'g-low'; if(v<=18) return 'g-med'; if(v<=25) return 'g-high'; return 'g-hot' }
+    function emojiFor(v){ if(v<=12) return '🟢'; if(v<=18) return '🟡'; if(v<=25) return '🟠'; return '🔴' }
+
+    // build day filter
+    const dayFilter = document.getElementById('dayFilter')
+    data.rows.forEach(r=>{const o=document.createElement('option');o.value=r.day;o.textContent=r.day;dayFilter.appendChild(o)})
+
+    function buildTable(filter){
+      const wrap = document.getElementById('tableWrap')
+      wrap.innerHTML=''
+      const table = document.createElement('table')
+      const thead = document.createElement('thead')
+      thead.innerHTML = '<tr>'+data.headers.map((h,i)=> i===0 ? '<th>'+h+'</th>' : '<th>'+h+'</th>').join('')+'</tr>'
+      table.appendChild(thead)
+      const tbody = document.createElement('tbody')
+      data.rows.forEach(r=>{
+        if(filter && filter!=='all' && filter!==r.day) return
+        const tr = document.createElement('tr')
+        const first = document.createElement('td'); first.innerHTML = '<strong>'+r.day+'</strong>'
+        tr.appendChild(first)
+        r.vals.forEach((v,idx)=>{
+          const td=document.createElement('td')
+          const span=document.createElement('span')
+          span.className='cell '+clsFor(v)
+          span.textContent = emojiFor(v)+' '+v
+          span.style.cursor='pointer'
+          span.title = r.zone
+          span.onclick = ()=>{ alert(r.day+' — '+data.headers[idx+1]+"\nEstimado: $"+v+"/h\nZona sugerida: "+r.zone) }
+          td.appendChild(span)
+          tr.appendChild(td)
+        })
+        tbody.appendChild(tr)
+      })
+      table.appendChild(tbody)
+      wrap.appendChild(table)
+    }
+
+    // peaks table
+    function buildPeaks(){
+      const wrap = document.getElementById('peaksWrap')
+      wrap.innerHTML=''
+      const table = document.createElement('table')
+      table.innerHTML = '<thead><tr><th>Día</th><th>Horario Pico</th><th>$ / h</th><th>Zona</th></tr></thead>'
+      const tbody=document.createElement('tbody')
+      data.rows.forEach(r=>{
+        const max = Math.max(...r.vals)
+        const idx = r.vals.indexOf(max)
+        const tr=document.createElement('tr')
+        tr.innerHTML = '<td><strong>'+r.day+'</strong></td><td>'+data.headers[idx+1]+'</td><td>'+emojiFor(max)+' '+max+'</td><td style="text-align:left">'+r.zone+'</td>'
+        tbody.appendChild(tr)
+      })
+      table.appendChild(tbody)
+      wrap.appendChild(table)
+
+      // zones list
+      const zones = document.getElementById('zonesList')
+      zones.innerHTML=''
+      const colorMap = ['#22c55e','#facc15','#fb923c','#ef4444']
+      const uniq = {}
+      data.rows.forEach(r=>{ uniq[r.zone]=true })
+      Object.keys(uniq).forEach((zone,i)=>{
+        const div=document.createElement('div');div.className='zone-badge'
+        const color=document.createElement('div');color.className='zone-color';color.style.background=colorMap[i%colorMap.length]
+        const txt=document.createElement('div');txt.innerHTML='<strong>'+Object.keys(uniq)[i].split(' (')[0]+'</strong><div style="font-size:13px;color:var(--muted)">'+zone+'</div>'
+        div.appendChild(color);div.appendChild(txt);zones.appendChild(div)
+      })
+    }
+
+    // mini heat
+    function buildMini(){
+      const wrap = document.getElementById('miniHeat')
+      wrap.innerHTML=''
+      // for each day show the peak cell
+      data.rows.forEach(r=>{
+        const max = Math.max(...r.vals)
+        const div=document.createElement('div');div.className='hm-cell '+clsFor(max)
+        div.title = r.day+' — '+r.zone
+        div.textContent = r.day+'\n'+emojiFor(max)+' '+max
+        wrap.appendChild(div)
+      })
+    }
+
+    // init
+    buildTable('all')
+    buildPeaks()
+    buildMini()
+
+    dayFilter.onchange = ()=> buildTable(dayFilter.value)
+
+    // download / copy
+    document.getElementById('downloadBtn').onclick = ()=>{
+      const html = '<!doctype html>'+document.documentElement.innerHTML
+      const blob = new Blob([html],{type:'text/html'})
+      const url = URL.createObjectURL(blob)
+      const a=document.createElement('a');a.href=url;a.download='rentabilidad_cabify_caba.html';document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url)
+    }
+    document.getElementById('copyBtn').onclick = async ()=>{
+      try{
+        await navigator.clipboard.writeText(document.documentElement.outerHTML)
+        alert('HTML copiado al portapapeles. Pégalo en un archivo y guardalo como .html')
+      }catch(e){alert('No se pudo copiar — usa Descarga en su lugar.')}
+    }
+
+  </script>
+</body>
+</html>

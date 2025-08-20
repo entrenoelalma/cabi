@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Plan Cabify CABA — Micrositio</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="" crossorigin=""/>
+  <style>
+    :root{--bg:#0f1724;--card:#0b1220;--accent:#ff7a18;--muted:#94a3b8;--glass:rgba(255,255,255,0.03)}
+    *{box-sizing:border-box;font-family:Inter,system-ui,Segoe UI,Roboto,'Helvetica Neue',Arial}
+    body{margin:0;background:linear-gradient(180deg,#071023 0%, #071837 60%);color:#e6eef8}
+    header{padding:28px 24px;border-bottom:1px solid rgba(255,255,255,0.03);display:flex;align-items:center;gap:18px}
+    .logo{width:64px;height:64px;border-radius:12px;background:linear-gradient(135deg,var(--accent),#ffb877);display:flex;align-items:center;justify-content:center;font-weight:800;color:#081022}
+    h1{font-size:22px;margin:0}
+    p.lead{margin:4px 0 0;color:var(--muted)}
+    .container{display:grid;grid-template-columns:1fr 420px;gap:20px;padding:24px}
+    .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:18px;border-radius:12px;box-shadow:0 6px 24px rgba(3,7,18,0.6);border:1px solid rgba(255,255,255,0.03)}
+    .big{padding:28px}
+    .grid{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;margin-top:12px}
+    .cell{padding:10px;border-radius:8px;text-align:center;font-weight:600}
+    .legend{display:flex;gap:8px;align-items:center;margin-top:12px}
+    .lg{padding:6px 10px;border-radius:999px;font-weight:700}
+    .g1{background:#0fcabf;color:#021018} /* muy baja */
+    .g2{background:#ffd86b;color:#241600} /* media */
+    .g3{background:#ff914d;color:#2a0f00} /* alta */
+    .g4{background:#ff4d6d;color:white} /* muy alta */
+    table{width:100%;border-collapse:collapse}
+    th,td{padding:8px;border-bottom:1px solid rgba(255,255,255,0.03);text-align:left}
+    th{font-weight:700;color:#cfe8ff}
+    .heat{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+    .heat .cell small{display:block;font-weight:400;color:var(--muted)}
+    .cta{display:inline-block;padding:10px 14px;border-radius:10px;background:var(--accent);color:#081022;font-weight:800;text-decoration:none}
+    .mapwrap{height:360px;border-radius:10px;overflow:hidden}
+    footer{padding:18px 24px;color:var(--muted);font-size:13px}
+    @media(max-width:980px){.container{grid-template-columns:1fr;}.mapwrap{height:300px}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">C</div>
+    <div>
+      <h1>Micrositio: Plan Cabify CABA — Semana & Martes</h1>
+      <p class="lead">Guía práctica, horarios pico, zonas y mapa interactivo para maximizar tus $/h como conductor.</p>
+    </div>
+  </header>
+
+  <div class="container">
+    <main>
+      <section class="card big">
+        <h2 style="margin:0 0 8px">Resumen rápido</h2>
+        <p style="margin:0;color:var(--muted)">Aquí tenés la planificación semanal: rangos horarios (0–24) divididos en 7 franjas, la estimación de rentabilidad ($/h) y recomendaciones tácticas por día. Más abajo encontrás la ruta optimizada para <strong>martes</strong> y el mapa con zonas calientes.</p>
+
+        <div style="margin-top:18px;display:flex;gap:12px;flex-wrap:wrap">
+          <div class="card" style="padding:12px;min-width:160px">
+            <strong>Escala</strong>
+            <div class="legend">
+              <span class="lg g1">🟢 ≤ $12/h</span>
+              <span class="lg g2">🟡 $12–18/h</span>
+              <span class="lg g3">🟠 $18–25/h</span>
+              <span class="lg g4">🔴 > $25/h</span>
+            </div>
+          </div>
+          <div class="card" style="padding:12px;min-width:220px">
+            <strong>Consejo rápido</strong>
+            <p style="margin:6px 0 0;color:var(--muted)">Aprovechá mañana (6–10) y tarde pico (17–20). Entre 14–17 se recomienda descanso o mantenerse en zonas con tráfico de ocio cercano.</p>
+          </div>
+        </div>
+
+        <hr style="border:none;border-top:1px solid rgba(255,255,255,0.03);margin:18px 0">
+
+        <h3 style="margin:0 0 8px">1) Tabla completa de rentabilidad estimada ($/h)</h3>
+        <div style="overflow:auto;margin-top:8px">
+          <table>
+            <thead>
+              <tr>
+                <th>Día / Hora</th>
+                <th>Madrugada<br>(0-6)</th>
+                <th>Mañana<br>(6-10)</th>
+                <th>Media mañana<br>(10-12)</th>
+                <th>Mediodía<br>(12-14)</th>
+                <th>Tarde<br>(14-17)</th>
+                <th>Tarde Pico<br>(17-20)</th>
+                <th>Noche<br>(20-0)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td><strong>Lunes</strong></td><td>8 🟢</td><td>18 🟠</td><td>14 🟡</td><td>15 🟡</td><td>14 🟡</td><td>20 🟠</td><td>15 🟡</td></tr>
+              <tr><td><strong>Martes</strong></td><td>8 🟢</td><td>18 🟠</td><td>14 🟡</td><td>15 🟡</td><td>14 🟡</td><td>20 🟠</td><td>15 🟡</td></tr>
+              <tr><td><strong>Miércoles</strong></td><td>9 🟢</td><td>18 🟠</td><td>15 🟡</td><td>15 🟡</td><td>15 🟡</td><td>22 🟠</td><td>16 🟡</td></tr>
+              <tr><td><strong>Jueves</strong></td><td>12 🟡</td><td>19 🟠</td><td>15 🟡</td><td>16 🟡</td><td>16 🟡</td><td>25 🔴</td><td>22 🟠</td></tr>
+              <tr><td><strong>Viernes</strong></td><td>14 🟡</td><td>20 🟠</td><td>16 🟡</td><td>17 🟡</td><td>16 🟡</td><td>28 🔴</td><td>30 🔴</td></tr>
+              <tr><td><strong>Sábado</strong></td><td>26 🔴</td><td>14 🟡</td><td>15 🟡</td><td>15 🟡</td><td>15 🟡</td><td>26 🔴</td><td>35 🔴</td></tr>
+              <tr><td><strong>Domingo</strong></td><td>20 🟠</td><td>10 🟢</td><td>12 🟢</td><td>12 🟡</td><td>14 🟡</td><td>20 🟠</td><td>22 🟠</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <hr style="border:none;border-top:1px solid rgba(255,255,255,0.03);margin:18px 0">
+
+        <h3 style="margin:0 0 8px">2) Picos por día y zona recomendada</h3>
+        <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:8px">
+          <div class="card">
+            <strong>Lunes</strong>
+            <p style="margin:6px 0 0;color:var(--muted)">6–10 — Microcentro / Retiro / Puerto Madero</p>
+          </div>
+          <div class="card">
+            <strong>Martes</strong>
+            <p style="margin:6px 0 0;color:var(--muted)">6–10 — Microcentro / Belgrano / Núñez</p>
+          </div>
+          <div class="card">
+            <strong>Miércoles</strong>
+            <p style="margin:6px 0 0;color:var(--muted)">17–20 — Microcentro / Tribunales / Once</p>
+          </div>
+          <div class="card">
+            <strong>Jueves</strong>
+            <p style="margin:6px 0 0;color:var(--muted)">17–20 — Palermo / Belgrano / Núñez</p>
+          </div>
+          <div class="card">
+            <strong>Viernes</strong>
+            <p style="margin:6px 0 0;color:var(--muted)">20–0 — Palermo Soho, Costanera, San Telmo</p>
+          </div>
+          <div class="card">
+            <strong>Sábado</strong>
+            <p style="margin:6px 0 0;color:var(--muted)">20–0 — Puerto Madero, Palermo, Recoleta</p>
+          </div>
+          <div class="card">
+            <strong>Domingo</strong>
+            <p style="margin:6px 0 0;color:var(--muted)">0–6 — Costanera / Palermo (regresos)</p>
+          </div>
+        </div>
+
+        <hr style="border:none;border-top:1px solid rgba(255,255,255,0.03);margin:18px 0">
+
+        <h3 style="margin:0 0 8px">3) Ruta optimizada sugerida — <em>Martes</em></h3>
+        <ol style="margin:8px 0 0 18px;color:var(--muted)">
+          <li><strong>06:00–08:00</strong> — Retiro / Microcentro / Puerto Madero (traslados a oficinas y Aeroparque).</li>
+          <li><strong>08:00–10:00</strong> — Belgrano / Núñez / entrada desde Zona Norte (viajes hacia centro).</li>
+          <li><strong>10:00–12:00</strong> — Recoleta / Caballito (viajes constantes, cortos).</li>
+          <li><strong>12:00–14:00</strong> — Palermo / Plaza Italia (almuerzos corporativos).</li>
+          <li><strong>14:00–17:00</strong> — Descanso sugerido o área en espera en Palermo.</li>
+          <li><strong>17:00–20:00</strong> — Microcentro / Tribunales / Once → luego Palermo/Recoleta (tarde pico).</li>
+          <li><strong>20:00–23:00</strong> — Palermo Soho / Recoleta (after office y cenas).</li>
+        </ol>
+
+        <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap">
+          <a class="cta" id="downloadCsv">Descargar CSV</a>
+          <a class="cta" id="printBtn" style="background:#1e293b">Imprimir resumen</a>
+        </div>
+      </section>
+    </main>
+
+    <aside>
+      <div class="card">
+        <h3 style="margin:0 0 8px">Mapa interactivo — Zonas calientes</h3>
+        <div id="map" class="mapwrap"></div>
+        <p style="margin:10px 0 0;color:var(--muted);font-size:14px">Marcadores con sugerencia de horario pico. Usá el mapa para orientarte y planear tus desplazamientos.</p>
+      </div>
+
+      <div class="card" style="margin-top:12px">
+        <h3 style="margin:0 0 8px">Heatmap visual</h3>
+        <div class="heat">
+          <!-- Cada celda corresponde a Día x Franja. Colores según escala. -->
+          <!-- Lunes -->
+          <div class="cell g1"><small>Lunes</small>8</div>
+          <div class="cell g3"><small>Lunes</small>18</div>
+          <div class="cell g2"><small>Lunes</small>14</div>
+          <div class="cell g2"><small>Lunes</small>15</div>
+          <div class="cell g2"><small>Lunes</small>14</div>
+          <div class="cell g3"><small>Lunes</small>20</div>
+          <div class="cell g2"><small>Lunes</small>15</div>
+          <!-- Martes -->
+          <div class="cell g1"><small>Martes</small>8</div>
+          <div class="cell g3"><small>Martes</small>18</div>
+          <div class="cell g2"><small>Martes</small>14</div>
+          <div class="cell g2"><small>Martes</small>15</div>
+          <div class="cell g2"><small>Martes</small>14</div>
+          <div class="cell g3"><small>Martes</small>20</div>
+          <div class="cell g2"><small>Martes</small>15</div>
+          <!-- Miércoles -->
+          <div class="cell g1"><small>Miércoles</small>9</div>
+          <div class="cell g3"><small>Miércoles</small>18</div>
+          <div class="cell g2"><small>Miércoles</small>15</div>
+          <div class="cell g2"><small>Miércoles</small>15</div>
+          <div class="cell g2"><small>Miércoles</small>15</div>
+          <div class="cell g3"><small>Miércoles</small>22</div>
+          <div class="cell g2"><small>Miércoles</small>16</div>
+          <!-- Jueves -->
+          <div class="cell g2"><small>Jueves</small>12</div>
+          <div class="cell g3"><small>Jueves</small>19</div>
+          <div class="cell g2"><small>Jueves</small>15</div>
+          <div class="cell g2"><small>Jueves</small>16</div>
+          <div class="cell g2"><small>Jueves</small>16</div>
+          <div class="cell g4"><small>Jueves</small>25</div>
+          <div class="cell g3"><small>Jueves</small>22</div>
+          <!-- Viernes -->
+          <div class="cell g2"><small>Viernes</small>14</div>
+          <div class="cell g3"><small>Viernes</small>20</div>
+          <div class="cell g2"><small>Viernes</small>16</div>
+          <div class="cell g2"><small>Viernes</small>17</div>
+          <div class="cell g2"><small>Viernes</small>16</div>
+          <div class="cell g4"><small>Viernes</small>28</div>
+          <div class="cell g4"><small>Viernes</small>30</div>
+          <!-- Sábado -->
+          <div class="cell g4"><small>Sábado</small>26</div>
+          <div class="cell g2"><small>Sábado</small>14</div>
+          <div class="cell g2"><small>Sábado</small>15</div>
+          <div class="cell g2"><small>Sábado</small>15</div>
+          <div class="cell g2"><small>Sábado</small>15</div>
+          <div class="cell g4"><small>Sábado</small>26</div>
+          <div class="cell g4"><small>Sábado</small>35</div>
+          <!-- Domingo -->
+          <div class="cell g3"><small>Domingo</small>20</div>
+          <div class="cell g1"><small>Domingo</small>10</div>
+          <div class="cell g1"><small>Domingo</small>12</div>
+          <div class="cell g2"><small>Domingo</small>12</div>
+          <div class="cell g2"><small>Domingo</small>14</div>
+          <div class="cell g3"><small>Domingo</small>20</div>
+          <div class="cell g3"><small>Domingo</small>22</div>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <footer>
+    <div style="max-width:1100px;margin:0 auto;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap">
+      <div>Datos estimados — orientativos. No garantizan precios reales de la app.</div>
+      <div>Creado para vos • Plan Cabify CABA</div>
+    </div>
+  </footer>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script>
+    // Mapa con zonas sugeridas
+    const map = L.map('map').setView([-34.6037, -58.3816], 12);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {maxZoom:19}).addTo(map);
+
+    const zonas = [
+      {zona:'Microcentro / Retiro / Puerto Madero', coords:[-34.602, -58.375], horario:'Lun-Martes Mañana (6-10)'},
+      {zona:'San Isidro / Zona Norte (corporativos)', coords:[-34.471, -58.528], horario:'Martes Mañana (6-10)'},
+      {zona:'Tribunales / Once', coords:[-34.605, -58.396], horario:'Miércoles Tarde (17-20)'},
+      {zona:'Palermo / Belgrano / Núñez', coords:[-34.571, -58.437], horario:'Jueves Tarde-Noche (17-22)'},
+      {zona:'Palermo Soho / Costanera Norte / San Telmo', coords:[-34.588, -58.431], horario:'Viernes Noche (20-0)'},
+      {zona:'Puerto Madero / Palermo / Recoleta', coords:[-34.615, -58.364], horario:'Sábado Noche (20-0)'},
+      {zona:'Costanera / Palermo / regreso Zona Norte', coords:[-34.55, -58.42], horario:'Domingo Madrugada (0-6)'}
+    ];
+
+    zonas.forEach(z=>{
+      L.marker(z.coords).addTo(map).bindPopup(`<strong>${z.zona}</strong><br>${z.horario}`);
+    });
+
+    // Descargar CSV con la tabla completa
+    const csvRows = [];
+    const header = ['Día','Madrugada (0-6)','Mañana (6-10)','Media Mañana (10-12)','Mediodía (12-14)','Tarde (14-17)','Tarde Pico (17-20)','Noche (20-0)'];
+    csvRows.push(header.join(','));
+    const rows = [
+      ['Lunes',8,18,14,15,14,20,15],
+      ['Martes',8,18,14,15,14,20,15],
+      ['Miércoles',9,18,15,15,15,22,16],
+      ['Jueves',12,19,15,16,16,25,22],
+      ['Viernes',14,20,16,17,16,28,30],
+      ['Sábado',26,14,15,15,15,26,35],
+      ['Domingo',20,10,12,12,14,20,22]
+    ];
+    rows.forEach(r=>csvRows.push(r.join(',')));
+    const csvString = csvRows.join('\n');
+
+    document.getElementById('downloadCsv').addEventListener('click',()=>{
+      const blob = new Blob([csvString], {type: 'text/csv;charset=utf-8;'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'rentabilidad_cabify_caba.csv';
+      document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+    });
+
+    document.getElementById('printBtn').addEventListener('click',()=>window.print());
+  </script>
+</body>
+</html>
